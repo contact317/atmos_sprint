@@ -1,0 +1,139 @@
+/* Remove default spacing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Set base font */
+body {
+  font-family: "Inter", sans-serif;
+  background: #f9fafb;
+  color: #111827;
+}
+
+/* Remove scrollbar for a cleaner UI */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 20px;
+}
+/* FIX COLLAPSING LAYOUT */
+.main-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar stays fixed width */
+.sidebar-fixed {
+  width: 240px;
+  min-width: 240px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* Content always takes remaining space */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+}
+.topbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: white;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+/* PAGE CONTAINER */
+.page-container {
+  padding: 20px;
+}
+
+/* CARDS */
+.cards-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.card {
+  flex: 1;
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* SEARCH ROW */
+.search-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 300px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+/* PRIMARY BUTTON */
+.primary-btn {
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+/* TABLE */
+.table-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.main-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.main-table th,
+.main-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.main-table th {
+  font-weight: 600;
+  background: #f3f4f6;
+}
+.profile {
+  position: relative;
+  z-index: 2000;
+}
+.profile-popup {
+  z-index: 5000 !important;
+}
+.top-bar {
+  position: relative;
+  z-index: 3000;
+}
+.page-container {
+  padding: 20px;
+  margin-top: 20px;
+}
+/* Prevent blur/dimming effect from affecting topbar */
+.topbar, 
+.topbar * {
+  isolation: isolate;
+}

@@ -1,0 +1,24 @@
+/* ensure luxury search input is white and matches theme */
+.lux-search-input,
+.issue-search,
+.search-input {
+  background: #ffffff !important;
+  color: #374151 !important;
+  border: 1px solid #e6e8e8 !important;
+}
+
+/* card styling consistent */
+.lux-card {
+  background: #ffffff;
+  border-left: 6px solid #4F755A;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+}
+
+/* table wrapper */
+.lux-table-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+}

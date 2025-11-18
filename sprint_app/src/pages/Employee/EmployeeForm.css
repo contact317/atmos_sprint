@@ -1,0 +1,94 @@
+/* EmployeeForm.css - drawer used for Add Employee (match Sprint panel) */
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.32);
+  z-index: 999;
+}
+
+/* drawer */
+.employee-drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 1000;
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: -8px 0 40px rgba(2,6,23,0.08);
+  border-left: 4px solid #4f755a;
+  transition: 0.28s ease;
+}
+.employee-drawer.open {
+  right: 0;
+}
+
+/* header */
+.drawer-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+/* close button */
+.drawer-close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* form */
+.drawer-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.drawer-label {
+  font-size: 13px;
+  color: #4b5563;
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+.drawer-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e6e9e8;
+  outline: none;
+}
+.drawer-input:focus {
+  box-shadow: 0 0 0 4px rgba(79,117,90,0.06);
+  border-color: #4f755a;
+}
+
+/* actions */
+.drawer-save {
+  margin-top: 14px;
+  padding: 12px;
+  background: #4f755a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+}
+.drawer-save:hover { background: #3b5b47; }
+
+.drawer-cancel {
+  margin-top: 8px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #e6e9e8;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}

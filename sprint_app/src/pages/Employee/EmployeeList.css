@@ -1,0 +1,126 @@
+/* EmployeeList.css -> table + layout + icons + responsive */
+
+/* page wrapper */
+.employee-page {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding-top: 18px;
+  position: relative;
+}
+
+/* header */
+.employee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.employee-h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+/* search + add */
+.employee-search {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  width: 260px;
+}
+
+.employee-add-btn {
+  background: #4F755A;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.employee-add-btn:hover {
+  background: #3B5B47;
+}
+
+/* table */
+.employee-table-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.04);
+  overflow: auto;
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.employee-table thead tr {
+  background: #f8fafb;
+}
+
+.employee-table th {
+  padding: 14px;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+  font-size: 14px;
+}
+
+.employee-table td {
+  padding: 14px;
+  color: #374151;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.no-data {
+  padding: 28px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* action icon */
+.icon-action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #4f755a;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-action:hover {
+  background: rgba(79,117,90,0.06);
+  transform: translateY(-1px);
+}
+
+/* small sort indicator */
+.sort-ind {
+  font-size: 12px;
+  margin-left: 6px;
+  color: #6b7280;
+}
+
+/* loading */
+.employee-loading {
+  padding: 26px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .employee-table { font-size: 13px; }
+  .employee-search { width: 160px; }
+}

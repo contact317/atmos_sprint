@@ -1,0 +1,79 @@
+/* SIDEBAR - professional luxury style */
+.sidebar {
+  width: 230px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #eef0f1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 22px 18px;
+  transition:
+    width 280ms cubic-bezier(.45,0,.25,1),
+    padding 280ms cubic-bezier(.45,0,.25,1),
+    background 200ms;
+  z-index: 40;
+}
+
+/* collapsed */
+.sidebar.collapsed { width: 78px; padding: 22px 10px; }
+
+/* inner wrapper ensures consistent alignment */
+.sidebar-inner { display: flex; flex-direction: column; height: 100%; }
+
+/* brand */
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #4F755A;
+  margin-bottom: 36px;
+  text-align: center;
+  letter-spacing: 0.6px;
+}
+
+/* menu */
+.menu { display: flex; flex-direction: column; gap: 10px; }
+
+/* menu item */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #2f3b36;
+  text-decoration: none;
+  font-size: 15px;
+  transition: background 180ms, color 180ms, transform 200ms;
+}
+
+/* icon color */
+.menu-item svg { color: #4F755A; transition: color 180ms, transform 180ms; }
+
+/* label */
+.menu-item .label { white-space: nowrap; transition: opacity 220ms ease, transform 220ms ease; }
+
+/* hover */
+.menu-item:hover {
+  background: rgba(79,117,90,0.10);
+  color: #254c3c;
+}
+.menu-item:hover svg { transform: translateX(0); color: #254c3c; }
+
+/* active route (NavLink will apply .active) */
+.menu-item.active, .menu-item[aria-current="true"] {
+  background: #4F755A;
+  color: #ffffff;
+}
+.menu-item.active svg, .menu-item[aria-current="true"] svg { color: #ffffff; }
+
+/* collapsed state: hide labels smoothly */
+.sidebar.collapsed .menu-item .label {
+  opacity: 0;
+  width: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+}
+
+/* make icons centered when collapsed */
+.sidebar.collapsed .menu-item { justify-content: center; }

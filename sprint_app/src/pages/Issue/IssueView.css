@@ -1,0 +1,132 @@
+:root {
+  --primary-green: #4f755a;
+  --panel-bg: #ffffff;
+  --text-main: #0f172a;
+  --muted: #f3f4f6;
+  --card-shadow: 0 18px 60px rgba(15,23,42,0.06);
+}
+
+/* Backdrop */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.35);
+  z-index: 2000;
+}
+
+/* Panel */
+.sprint-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 35%;
+  max-width: 680px;
+  height: 100vh;
+  background: var(--panel-bg);
+  box-shadow: var(--card-shadow);
+  border-left: 1px solid #e6eee6;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.36s cubic-bezier(.25,1,.5,1);
+}
+
+@media (max-width: 900px) {
+  .sprint-panel { width: 100%; }
+}
+
+/* header */
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef2f0;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.drawer-close {
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #374151;
+}
+
+/* body */
+.panel-body {
+  padding: 18px 6px 32px 6px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* detail card */
+.detail-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #eef3ee;
+  box-shadow: 0 6px 22px rgba(6,12,10,0.02);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 6px;
+  align-items: center;
+  border-bottom: 1px solid #f2f6f2;
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+.detail-row label {
+  font-size: 14px;
+  color: var(--primary-green);
+  font-weight: 700;
+  flex: 0 0 44%;
+}
+
+.detail-row .value {
+  font-size: 14px;
+  color: #23303a;
+  text-align: right;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* description block */
+.description-card {
+  padding: 18px;
+}
+
+.section-label {
+  display:block;
+  font-weight:700;
+  color: var(--primary-green);
+  margin-bottom: 8px;
+}
+
+.description-text {
+  color: #374151;
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* attachment */
+.attachment-img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+  margin-top: 8px;
+}

@@ -1,0 +1,79 @@
+/* CARDS ROW */
+.lux-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+/* SEARCH ROW */
+.lux-search-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+/* FULL-WIDTH SEARCH */
+.lux-search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  margin-right: 20px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.lux-search-input:focus {
+  border-color: #4F755A;
+  box-shadow: 0 0 0 3px rgba(79, 117, 90, 0.2);
+}
+
+/* PRIMARY BUTTON */
+.lux-primary-btn {
+  background: #4F755A;
+  color: white;
+  padding: 12px 20px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.lux-primary-btn:hover {
+  background: #3B5B47;
+}
+
+/* TABLE WRAPPER */
+.lux-table-wrapper {
+  background: white;
+  padding: 0;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+/* Restore card color + shadow */
+.lux-card {
+  border-left: 6px solid #4F755A;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lux-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Table colors restored */
+.lux-table-wrapper table thead {
+  background: #f3f4f6;
+}
+
+.lux-table-wrapper table th,
+.lux-table-wrapper table td {
+  color: #374151;
+}

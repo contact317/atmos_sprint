@@ -1,0 +1,106 @@
+:root {
+  --primary-green: #4f755a;
+  --panel-bg: #ffffff;
+  --panel-shadow: 0 24px 80px rgba(15,23,42,0.08);
+  --muted-border: #eef7ef;
+  --text-main: #0f172a;
+}
+
+/* Backdrop (shared) */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.35);
+  z-index: 2000;
+}
+
+/* Panel */
+.sprint-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 35%;
+  max-width: 720px;
+  height: 100vh;
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
+  border-left: 1px solid var(--muted-border);
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .sprint-panel { width: 100%; }
+}
+
+/* Head */
+.panel-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 18px;
+  border-bottom: 1px solid #eef6f1;
+}
+
+.panel-title { font-size:20px; font-weight:700; color:var(--text-main); }
+.drawer-close { font-size:26px; background:transparent; border:none; cursor:pointer; color:#374151; }
+
+/* Body */
+.panel-body { padding: 18px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; }
+
+/* Form */
+.update-form { display:flex; flex-direction:column; gap:14px; }
+
+.form-row { display:flex; flex-direction:column; gap:8px; }
+.form-row label { color: var(--primary-green); font-weight:700; }
+.form-row input, .form-row select, .form-row textarea {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e6ece6;
+  background: #fbfdfb;
+  font-size: 14px;
+  color:#23303a;
+}
+
+.form-row textarea { min-height:110px; resize:none; }
+
+/* two column (dates) */
+.two-cols { display:flex; gap:12px; }
+.two-cols > div { flex:1; }
+
+/* upload box */
+.upload-box {
+  border: 2px dashed var(--primary-green);
+  padding: 14px;
+  border-radius: 10px;
+  text-align:center;
+  background: rgba(79,117,90,0.04);
+}
+.upload-note { color: var(--primary-green); font-size:13px; margin-top:8px; }
+
+/* actions sticky bottom */
+.form-actions {
+  margin-top: 10px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+/* Save btn */
+.save-btn {
+  padding: 12px 18px;
+  background: var(--primary-green);
+  color: white;
+  border-radius: 10px;
+  border: none;
+  cursor:pointer;
+  font-weight:700;
+}
+.save-btn:hover { transform: translateY(-2px); }
+
+/* small screens */
+@media (max-width: 900px) {
+  .form-row input, .form-row select, .form-row textarea { font-size:15px; padding:14px; }
+  .panel-head { padding: 14px; }
+  .panel-body { padding: 14px; }
+}
