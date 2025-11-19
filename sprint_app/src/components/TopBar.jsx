@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Menu, Bell, UserCircle, Users, Mail, Globe, User } from "lucide-react";
+
 import {
   HiOutlineBell,
   HiOutlineUserCircle,
@@ -140,182 +142,186 @@ export default function TopBar({ title, onToggleSidebar }) {
 
   return (
     <header className="topbar">
-      <div className="topbar-left">
-        <button
-          className="menu-btn"
-          onClick={onToggleSidebar}
-          aria-label="toggle menu"
-          title="Toggle menu"
-        >
-          <HiOutlineMenu size={24} />
-        </button>
-      <div className="topbar-title">{title}</div>
+<div className="topbar-left">
+  <button
+    className="menu-btn"
+    onClick={onToggleSidebar}
+    aria-label="toggle menu"
+    title="Toggle menu"
+  >
+    <Menu size={24} strokeWidth={1.8} />
+  </button>
 
-      </div>
+  <div className="topbar-title">{title}</div>
+</div>
 
-      <div className="topbar-right">
-        <button
-          className="icon-btn"
-          aria-label="notifications"
-          title="Notifications"
-          onClick={() => {
-            // You can later open a notification panel — for now toggle a simple toast
-            navigate("/notifications", { replace: false });
-          }}
-        >
-          <HiOutlineBell size={20} color="#4f755a" />
-        </button>
+<div className="topbar-right">
+  <button
+    className="icon-btn"
+    aria-label="notifications"
+    title="Notifications"
+    onClick={() => {
+      navigate("/notifications", { replace: false });
+    }}
+  >
+    <Bell size={20} strokeWidth={1.8} color="#4f755a" />
+  </button>
 
-        <div className="profile-root" ref={ref}>
+  <div className="profile-root" ref={ref}>
+    <button
+      className="icon-btn profile-circle"
+      onClick={() => setOpen((v) => !v)}
+      aria-haspopup="true"
+      title="Profile menu"
+    >
+      <UserCircle size={22} strokeWidth={1.8} color="#4f755a" />
+    </button>
+
+    {open && (
+      <div className="profile-menu" role="menu" aria-label="Profile menu">
+
+        {/* ICON ROW */}
+        <div className="profile-icon-row">
           <button
-            className="icon-btn profile-circle"
-            onClick={() => setOpen((v) => !v)}
-            aria-haspopup="true"
-            title="Profile menu"
+            className="small-icon"
+            title="Teams"
+            onClick={openTeams}
           >
-            <HiOutlineUserCircle size={22} color="#4f755a" />
+            <Users size={20} strokeWidth={1.6} />
+            <div className="small-icon-label">Teams</div>
           </button>
 
-          {open && (
-            <div className="profile-menu" role="menu" aria-label="Profile menu">
-              {/* ICON ROW */}
-              <div className="profile-icon-row">
-                <button
-                  className="small-icon"
-                  title="Teams"
-                  onClick={openTeams}
-                >
-                  <HiOutlineUsers size={20} />
-                  <div className="small-icon-label">Teams</div>
-                </button>
+          <button
+            className="small-icon"
+            title="Outlook"
+            onClick={openOutlook}
+          >
+            <Mail size={20} strokeWidth={1.6} />
+            <div className="small-icon-label">Outlook</div>
+          </button>
 
-                <button
-                  className="small-icon"
-                  title="Outlook"
-                  onClick={openOutlook}
-                >
-                  <HiOutlineMail size={20} />
-                  <div className="small-icon-label">Outlook</div>
-                </button>
+          <button
+            className="small-icon"
+            title="Portal"
+            onClick={openPortal}
+          >
+            <Globe size={20} strokeWidth={1.6} />
+            <div className="small-icon-label">Portal</div>
+          </button>
 
-                <button
-                  className="small-icon"
-                  title="Portal"
-                  onClick={openPortal}
-                >
-                  <HiOutlineGlobeAlt size={20} />
-                  <div className="small-icon-label">Portal</div>
-                </button>
-
-                <button
-                  className="small-icon"
-                  title="Employees"
-                  onClick={openEmployees}
-                >
-                  <FaUserTie size={20} />
-                  <div className="small-icon-label">Employees</div>
-                </button>
-              </div>
-
-              <div className="profile-divider" />
-
-              {/* PROFILE HEADER */}
-              <div className="profile-header">
-                <div className="profile-avatar">
-                  <HiOutlineUserCircle size={36} color="#4f755a" />
-                </div>
-
-                <div className="profile-meta">
-                  <div className="profile-name">{displayName}</div>
-                  <div className="profile-sub">
-                    {displayRole} • {displayDept}
-                  </div>
-                </div>
-              </div>
-
-              <div className="profile-actions">
-                <button
-                  className="profile-action"
-                  onClick={() => {
-                    setShowDetails(true);
-                    setShowChangePwd(false);
-                  }}
-                >
-                  <span className="profile-action-left">Details</span>
-                </button>
-
-                <button
-                  className="profile-action"
-                  onClick={() => {
-                    setShowChangePwd(true);
-                    setShowDetails(false);
-                  }}
-                >
-                  <span className="profile-action-left">Settings (Change Password)</span>
-                </button>
-              </div>
-
-              <div className="profile-divider" />
-
-              <div style={{ padding: "10px" }}>
-                <button
-                  className="logout-btn"
-                  onClick={handleLogout}
-                >
-                  ⟲ Logout
-                </button>
-              </div>
-
-              {/* DETAILS PANEL (inline) */}
-              {showDetails && (
-                <div className="profile-details">
-                  <div className="detail-row"><strong>Name:</strong> <span>{displayName}</span></div>
-                  <div className="detail-row"><strong>Emp ID:</strong> <span>{empId || "-"}</span></div>
-                  <div className="detail-row"><strong>Role:</strong> <span>{displayRole}</span></div>
-                  <div className="detail-row"><strong>Department:</strong> <span>{displayDept}</span></div>
-                </div>
-              )}
-
-              {/* CHANGE PASSWORD PANEL (inline) */}
-              {showChangePwd && (
-                <div className="change-pwd-panel">
-                  <label className="pwd-label">Current Password</label>
-                  <input
-                    type="password"
-                    value={pwdForm.current}
-                    onChange={(e) => setPwdForm({ ...pwdForm, current: e.target.value })}
-                    className="pwd-input"
-                    placeholder="Enter current password"
-                  />
-                  <label className="pwd-label">New Password</label>
-                  <input
-                    type="password"
-                    value={pwdForm.newpwd}
-                    onChange={(e) => setPwdForm({ ...pwdForm, newpwd: e.target.value })}
-                    className="pwd-input"
-                    placeholder="Enter new password"
-                  />
-                  <label className="pwd-label">Confirm New Password</label>
-                  <input
-                    type="password"
-                    value={pwdForm.confirm}
-                    onChange={(e) => setPwdForm({ ...pwdForm, confirm: e.target.value })}
-                    className="pwd-input"
-                    placeholder="Confirm new password"
-                  />
-
-                  {statusMsg && <div className="pwd-status">{statusMsg}</div>}
-
-                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <button className="pwd-save" onClick={handlePwdChange}>Save</button>
-                    <button className="pwd-cancel" onClick={() => setShowChangePwd(false)}>Cancel</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          <button
+            className="small-icon"
+            title="Employees"
+            onClick={openEmployees}
+          >
+            <User size={20} strokeWidth={1.6} />
+            <div className="small-icon-label">Employees</div>
+          </button>
         </div>
+
+        <div className="profile-divider" />
+
+        {/* PROFILE HEADER */}
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <UserCircle size={36} strokeWidth={1.8} color="#4f755a" />
+          </div>
+
+          <div className="profile-meta">
+            <div className="profile-name">{displayName}</div>
+            <div className="profile-sub">
+              {displayRole} • {displayDept}
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-actions">
+          <button
+            className="profile-action"
+            onClick={() => {
+              setShowDetails(true);
+              setShowChangePwd(false);
+            }}
+          >
+            <span className="profile-action-left">Details</span>
+          </button>
+
+          <button
+            className="profile-action"
+            onClick={() => {
+              setShowChangePwd(true);
+              setShowDetails(false);
+            }}
+          >
+            <span className="profile-action-left">Settings (Change Password)</span>
+          </button>
+        </div>
+
+        <div className="profile-divider" />
+
+        <div style={{ padding: "10px" }}>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            ⟲ Logout
+          </button>
+        </div>
+
+        {/* DETAILS PANEL */}
+        {showDetails && (
+          <div className="profile-details">
+            <div className="detail-row"><strong>Name:</strong> <span>{displayName}</span></div>
+            <div className="detail-row"><strong>Emp ID:</strong> <span>{empId || "-"}</span></div>
+            <div className="detail-row"><strong>Role:</strong> <span>{displayRole}</span></div>
+            <div className="detail-row"><strong>Department:</strong> <span>{displayDept}</span></div>
+          </div>
+        )}
+
+        {/* CHANGE PASSWORD PANEL */}
+        {showChangePwd && (
+          <div className="change-pwd-panel">
+            <label className="pwd-label">Current Password</label>
+            <input
+              type="password"
+              value={pwdForm.current}
+              onChange={(e) => setPwdForm({ ...pwdForm, current: e.target.value })}
+              className="pwd-input"
+              placeholder="Enter current password"
+            />
+
+            <label className="pwd-label">New Password</label>
+            <input
+              type="password"
+              value={pwdForm.newpwd}
+              onChange={(e) => setPwdForm({ ...pwdForm, newpwd: e.target.value })}
+              className="pwd-input"
+              placeholder="Enter new password"
+            />
+
+            <label className="pwd-label">Confirm New Password</label>
+            <input
+              type="password"
+              value={pwdForm.confirm}
+              onChange={(e) => setPwdForm({ ...pwdForm, confirm: e.target.value })}
+              className="pwd-input"
+              placeholder="Confirm new password"
+            />
+
+            {statusMsg && <div className="pwd-status">{statusMsg}</div>}
+
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button className="pwd-save" onClick={handlePwdChange}>Save</button>
+              <button className="pwd-cancel" onClick={() => setShowChangePwd(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
+
       </div>
+    )}
+  </div>
+</div>
+
     </header>
   );
 }

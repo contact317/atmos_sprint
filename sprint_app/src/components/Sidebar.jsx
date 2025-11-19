@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  HiOutlineHome,
-  HiOutlineClipboardList,
-  HiOutlineExclamationCircle,
-  HiOutlineCog
-} from "react-icons/hi";
+import { Home, ListTodo, AlertCircle, Settings } from "lucide-react";
+
 import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
 
@@ -22,13 +18,13 @@ export default function Sidebar({ collapsed }) {
 
           {/* DASHBOARD */}
           <NavLink to="/dashboard" className="menu-item">
-            <HiOutlineHome size={20} />
+<Home size={20} strokeWidth={1.8} />
             <span className="label">Dashboard</span>
           </NavLink>
 
           {/* SPRINTS — visible to ALL */}
           <NavLink to="/sprints" className="menu-item">
-            <HiOutlineClipboardList size={20} />
+<ListTodo size={20} strokeWidth={1.8} />
             <span className="label">
               {isEmployee ? "My Sprints" : "Sprints"}
             </span>
@@ -36,7 +32,7 @@ export default function Sidebar({ collapsed }) {
 
           {/* ISSUES — visible to ALL */}
           <NavLink to="/issues" className="menu-item">
-            <HiOutlineExclamationCircle size={20} />
+<AlertCircle size={20} strokeWidth={1.8} />
             <span className="label">
               {isEmployee ? "My Issues" : "Issues"}
             </span>
@@ -45,7 +41,7 @@ export default function Sidebar({ collapsed }) {
           {/* SETTINGS — manager only (optional) */}
           {!isEmployee && (
             <NavLink to="/settings" className="menu-item">
-              <HiOutlineCog size={20} />
+<Settings size={20} strokeWidth={1.8} />
               <span className="label">Settings</span>
             </NavLink>
           )}

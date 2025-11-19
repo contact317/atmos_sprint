@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getSprintList } from "../../api/sprintApi";
 import "./SprintList.css";
 
-import { HiOutlineEye, HiOutlinePencilAlt } from "react-icons/hi";
+import { Eye, Pencil } from "lucide-react";
 
 import SprintCreate from "./SprintCreate";
 import SprintUpdate from "./SprintUpdate";
@@ -163,8 +163,9 @@ export default function SprintList() {
                       setSelectedSprint(sp);
                       setOpenView(true);
                     }}
+                    style={{ background: "none", boxShadow: "none" }}
                   >
-                    <HiOutlineEye />
+<Eye size={18} strokeWidth={1.8} />
                   </button>
                 </td>
 
@@ -176,8 +177,9 @@ export default function SprintList() {
                       setSelectedSprint(sp);
                       setOpenUpdate(true);
                     }}
+                    style={{ background: "none", boxShadow: "none" }}
                   >
-                    <HiOutlinePencilAlt />
+<Pencil size={18} strokeWidth={1.8} />
                   </button>
                 </td>
 

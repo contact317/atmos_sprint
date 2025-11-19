@@ -11,11 +11,12 @@ export default function Signin() {
     e.preventDefault();
     setErr("");
 
-    // Load all employees from Firebase
     const data = await getEmployeeList();
-    const employees = data ? Object.values(data) : [];
 
-    // Find matching user
+    const employees = data
+      ? Object.entries(data).map(([key, val]) => ({ key, ...val }))
+      : [];
+
     const user = employees.find(
       (u) =>
         String(u.empid).toLowerCase() === String(empid).toLowerCase()
@@ -31,17 +32,21 @@ export default function Signin() {
       return;
     }
 
-    // Save logged in user
-localStorage.setItem("authUser", JSON.stringify(user));
-console.log("AUTH USER STORED:", user);  // LOG TO CHECK
-window.location.href = "/dashboard";
-
+    localStorage.setItem("authUser", JSON.stringify(user));
+    console.log("AUTH USER STORED:", user);
+    window.location.href = "/dashboard";
   };
 
-  return (
-    <div className="signin-container">
+return (
+  <div
+    className="signin-container"
+    style={{ backgroundImage: 'url("/background.jpg")' }}
+  >
+    <div className="signin-card">
+      <img src="/logo_atmos.png" alt="Logo" className="signin-logo" />
+
       <form onSubmit={handleSignin}>
-        <h2>Sign In</h2>
+        <h2>Login</h2>
 
         <input
           type="text"
@@ -61,8 +66,10 @@ window.location.href = "/dashboard";
 
         {err && <div className="error">{err}</div>}
 
-        <button type="submit">Login</button>
+        <button type="submit">Submit</button>
       </form>
     </div>
-  );
+  </div>
+);
+
 }
