@@ -16,7 +16,7 @@ export default function SprintList() {
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openView, setOpenView] = useState(false);
 
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedSprint, setSelectedSprint] = useState(null);
 
   // Logged user
   const authUser = JSON.parse(localStorage.getItem("authUser"));
@@ -29,9 +29,13 @@ export default function SprintList() {
 
   const loadSprints = async () => {
     const data = await getSprintList();
-    let sprintArray = data ? Object.values(data) : [];
 
-    // Employee-only viewing
+    // ⭐ FIXED: Preserve Firebase key
+    let sprintArray = data
+      ? Object.entries(data).map(([key, val]) => ({ key, ...val }))
+      : [];
+
+    // employee-only
     if (isEmployee) {
       sprintArray = sprintArray.filter(
         (sp) =>
@@ -39,7 +43,7 @@ export default function SprintList() {
       );
     }
 
-    // ⭐ SORT: NEWEST FIRST
+    // sort newest first
     sprintArray.sort((a, b) => {
       const da = new Date(a.start_date || a.createdAt || 0);
       const db = new Date(b.start_date || b.createdAt || 0);
@@ -65,7 +69,6 @@ export default function SprintList() {
     sp.title?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Status pill helper
   const getStatusClass = (status) => {
     if (!status) return "status-pill gray";
     const st = status.toLowerCase();
@@ -132,8 +135,8 @@ export default function SprintList() {
           </thead>
 
           <tbody>
-            {filtered.map((sp, index) => (
-              <tr key={index}>
+            {filtered.map((sp) => (
+              <tr key={sp.key}>
                 <td className="col-app">{sp.applicationname || "-"}</td>
                 <td className="col-title">{sp.title || "-"}</td>
 
@@ -157,7 +160,7 @@ export default function SprintList() {
                   <button
                     className="icon-btn view-btn"
                     onClick={() => {
-                      setSelectedIndex(index);
+                      setSelectedSprint(sp);
                       setOpenView(true);
                     }}
                   >
@@ -170,13 +173,14 @@ export default function SprintList() {
                   <button
                     className="icon-btn update-btn"
                     onClick={() => {
-                      setSelectedIndex(index);
+                      setSelectedSprint(sp);
                       setOpenUpdate(true);
                     }}
                   >
                     <HiOutlinePencilAlt />
                   </button>
                 </td>
+
               </tr>
             ))}
           </tbody>
@@ -195,15 +199,14 @@ export default function SprintList() {
 
       {openView && (
         <SprintView
-          data={filtered[selectedIndex]}
+          data={selectedSprint}
           onClose={() => setOpenView(false)}
         />
       )}
 
       {openUpdate && (
         <SprintUpdate
-          index={selectedIndex}
-          sprint={filtered[selectedIndex]}
+          sprint={selectedSprint}
           isEmployee={isEmployee}
           onClose={() => {
             setOpenUpdate(false);
@@ -211,7 +214,6 @@ export default function SprintList() {
           }}
         />
       )}
-
     </div>
   );
 }

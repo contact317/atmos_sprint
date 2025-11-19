@@ -176,24 +176,28 @@ return (
         <div style={{ display: "flex", gap: "14px" }}>
           <div style={{ flex: 1 }}>
             <label className="sprint-label">Start Date</label>
-            <input
-              type="date"
-              name="start_date"
-              value={form.start_date}
-              onChange={handleChange}
-              className="sprint-input"
-            />
+<input
+  type="date"
+  name="start_date"
+  value={form.start_date}
+  onChange={handleChange}
+  className="sprint-input"
+  min={new Date().toISOString().split("T")[0]}
+/>
+
           </div>
 
           <div style={{ flex: 1 }}>
             <label className="sprint-label">Due Date</label>
-            <input
-              type="date"
-              name="due_date"
-              value={form.due_date}
-              onChange={handleChange}
-              className="sprint-input"
-            />
+<input
+  type="date"
+  name="due_date"
+  value={form.due_date}
+  onChange={handleChange}
+  className="sprint-input"
+  min={form.start_date || new Date().toISOString().split("T")[0]}
+/>
+
           </div>
         </div>
 

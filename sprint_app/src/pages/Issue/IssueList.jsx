@@ -29,7 +29,11 @@ export default function IssueList() {
 
   const loadIssues = async () => {
     const data = await getIssueList();
-    let issueArray = data ? Object.values(data) : [];
+
+    // ⭐ FIXED: Preserve Firebase key
+    let issueArray = data
+      ? Object.entries(data).map(([key, val]) => ({ key, ...val }))
+      : [];
 
     // Employee-only viewing
     if (isEmployee) {
@@ -131,7 +135,7 @@ export default function IssueList() {
 
           <tbody>
             {filtered.map((issue, index) => (
-              <tr key={index}>
+              <tr key={issue.key}>
                 <td className="col-app">{issue.applicationname || "-"}</td>
                 <td className="col-title">{issue.title || "-"}</td>
 
@@ -171,13 +175,14 @@ export default function IssueList() {
                     title={isEmployee ? "Update status" : "Edit issue"}
                     onClick={() => {
                       setSelectedIndex(index);
-                      setSelectedData(issue);
+                      setSelectedData(issue); // ⭐ pass issue with key
                       setOpenUpdate(true);
                     }}
                   >
                     <HiOutlinePencilAlt />
                   </button>
                 </td>
+
               </tr>
             ))}
           </tbody>
@@ -197,7 +202,7 @@ export default function IssueList() {
       {/* UPDATE */}
       {openUpdate && (
         <IssueUpdate
-          index={selectedIndex}
+          index={selectedIndex}  // kept for UI — not used for API anymore
           issue={selectedData}
           isEmployee={isEmployee}
           onClose={() => {

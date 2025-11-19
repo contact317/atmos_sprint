@@ -32,7 +32,7 @@ export default function EmployeeList() {
 
   // create form
   const [createForm, setCreateForm] = useState({
-    employee_id: "",
+    empid: "",
     name: "",
     department: "",
     role: "",
@@ -60,13 +60,20 @@ export default function EmployeeList() {
     loadDepartments();
   }, []);
 
+  // old:
+  // const data = await getEmployeeList();
+  // if (data) setEmployees(Object.values(data));
+
+  // new (preserve key):
   const loadEmployees = async () => {
     setLoading(true);
     try {
-      const data = await getEmployeeList();
-      if (data) {
-        // keep original structure: Object.values(data)
-        const arr = Object.values(data);
+      const data = await getEmployeeList(); // data is an object keyed by firebase keys
+      if (data && typeof data === "object") {
+        const arr = Object.entries(data).map(([key, val]) => {
+          // prefer original id-like fields but keep 'key' for API calls
+          return { key, ...val };
+        });
         setEmployees(arr);
       } else {
         setEmployees([]);
@@ -100,13 +107,13 @@ export default function EmployeeList() {
     setCreateForm({ ...createForm, [e.target.name]: e.target.value });
 
   const handleCreateSubmit = async () => {
-    if (!createForm.employee_id || !createForm.name || !createForm.department) {
+    if (!createForm.empid || !createForm.name || !createForm.department) {
       return alert("Please fill required fields: Employee ID, Name, Department");
     }
     setCreating(true);
     try {
       await addEmployee({
-        empid: createForm.employee_id,
+        empid: createForm.empid,
         name: createForm.name,
         department: createForm.department,
         role: createForm.role || "employee",
@@ -193,7 +200,7 @@ export default function EmployeeList() {
 
   // FILTER + SORT logic
   const filtered = employees.filter((emp) =>
-    (((emp.name || "") + " " + (emp.employee_id || "") + " " + (emp.role || "") + " " + (emp.department || ""))
+    (((emp.name || "") + " " + (emp.empid || "") + " " + (emp.role || "") + " " + (emp.department || ""))
       .toString()
       .toLowerCase()
       .includes(search.toLowerCase()))
@@ -327,9 +334,9 @@ export default function EmployeeList() {
                 </tr>
               ) : (
                 sorted.map((emp, i) => (
-                  <tr key={i}>
+                  <tr key={emp.key || i}>
                     <td>{emp.name || "-"}</td>
-                    <td>{emp.employee_id || emp.empid || "-"}</td>
+                    <td>{emp.empid || emp.employee_id || "-"}</td>
                     <td>{emp.department || "-"}</td>
                     <td>{emp.role || "-"}</td>
                     <td>{emp.email || "-"}</td>
@@ -338,7 +345,8 @@ export default function EmployeeList() {
                       <button
                         className="icon-action edit-icon"
                         title="Edit employee"
-                        onClick={() => openUpdateDrawer(emp.id ?? i, emp)}
+                        // new - use key stored on each record
+                        onClick={() => openUpdateDrawer(emp.key, emp)}
                       >
                         <FiEdit2 />
                       </button>
@@ -362,7 +370,7 @@ export default function EmployeeList() {
 
             <div className="drawer-form">
               <label className="drawer-label">Employee ID *</label>
-              <input name="employee_id" className="drawer-input" value={createForm.employee_id} onChange={handleCreateChange} />
+              <input name="empid" className="drawer-input" value={createForm.empid} onChange={handleCreateChange} />
 
               <label className="drawer-label">Name *</label>
               <input name="name" className="drawer-input" value={createForm.name} onChange={handleCreateChange} />
@@ -407,7 +415,7 @@ export default function EmployeeList() {
 
             <div className="drawer-form">
               <label className="drawer-label">Employee ID</label>
-              <input name="employee_id" className="drawer-input" value={updateForm.employee_id || updateForm.empid || ""} onChange={handleUpdateChange} />
+              <input name="empid" className="drawer-input" value={updateForm.empid || updateForm.employee_id || ""} onChange={handleUpdateChange} />
 
               <label className="drawer-label">Name</label>
               <input name="name" className="drawer-input" value={updateForm.name || ""} onChange={handleUpdateChange} />

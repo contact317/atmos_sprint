@@ -6,11 +6,12 @@ import { getEmployeeList } from "../../api/employeeApi";
 
 import "./SprintUpdate.css";
 
-export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
+export default function SprintUpdate({ sprint, isEmployee, onClose }) {
   const [apps, setApps] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
+  // ⭐ FIXED: Safe copy
   const [form, setForm] = useState({ ...sprint });
 
   useEffect(() => {
@@ -31,7 +32,9 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
   const loadEmployees = async (dept) => {
     if (!dept) return;
     const all = await getEmployeeList();
-    const list = all ? Object.values(all) : [];
+    const list = all
+      ? Object.entries(all).map(([key, val]) => ({ key, ...val }))
+      : [];
     const filtered = list.filter(
       (emp) =>
         String(emp.department).toLowerCase() === String(dept).toLowerCase()
@@ -49,7 +52,8 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
   };
 
   const handleSubmit = async () => {
-    await updateSprint(index, form);
+    // ⭐ FIXED: Use Firebase key for update
+    await updateSprint(sprint.key, form);
     alert("Sprint updated successfully!");
     onClose();
   };
@@ -69,7 +73,6 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
         <div className="panel-body">
           <form className="update-form" onSubmit={(e)=>{ e.preventDefault(); handleSubmit(); }}>
 
-            {/* Manager: full edit */}
             {!isEmployee && (
               <>
                 <div className="form-row">
@@ -102,19 +105,35 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
                   <label>Assign To</label>
                   <select name="assigned_to" value={form.assigned_to || ""} onChange={handleChange}>
                     <option value="">Select Employee</option>
-                    {employees.map((emp)=> <option key={emp.empid} value={emp.empid}>{emp.empid} - {emp.name}</option>)}
+                    {employees.map((emp)=> (
+                      <option key={emp.key} value={emp.empid}>
+                        {emp.empid} - {emp.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="form-row two-cols">
                   <div>
                     <label>Start Date</label>
-                    <input type="date" name="start_date" value={form.start_date || ""} onChange={handleChange} />
+<input
+  type="date"
+  name="start_date"
+  value={form.start_date || ""}
+  onChange={handleChange}
+  min={new Date().toISOString().split("T")[0]}
+/>
                   </div>
 
                   <div>
                     <label>Due Date</label>
-                    <input type="date" name="due_date" value={form.due_date || ""} onChange={handleChange} />
+<input
+  type="date"
+  name="due_date"
+  value={form.due_date || ""}
+  onChange={handleChange}
+  min={form.start_date || new Date().toISOString().split("T")[0]}
+/>
                   </div>
                 </div>
 
@@ -129,7 +148,6 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
               </>
             )}
 
-            {/* Employee: only status + upload UI */}
             {isEmployee && (
               <>
                 <div className="form-row">
@@ -151,7 +169,6 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
               </>
             )}
 
-            {/* common quick-status (manager) */}
             {!isEmployee && (
               <div className="form-row">
                 <label>Status</label>
@@ -166,6 +183,7 @@ export default function SprintUpdate({ index, sprint, isEmployee, onClose }) {
             <div className="form-actions">
               <button type="submit" className="save-btn">Save Changes</button>
             </div>
+
           </form>
         </div>
       </aside>

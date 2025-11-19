@@ -192,23 +192,27 @@ const loadEmployees = async () => {
           <div style={{ display: "flex", gap: "15px" }}>
             <div style={{ flex: 1 }}>
               <label className="issue-label">Start Date</label>
-              <input
-                type="date"
-                name="start_date"
-                value={form.start_date}
-                onChange={handleChange}
-                className="issue-input"
-              />
+<input
+  type="date"
+  name="start_date"
+  value={form.start_date}
+  onChange={handleChange}
+  className="issue-input"
+  min={new Date().toISOString().split("T")[0]}
+/>
+
             </div>
             <div style={{ flex: 1 }}>
               <label className="issue-label">Due Date</label>
-              <input
-                type="date"
-                name="due_date"
-                value={form.due_date}
-                onChange={handleChange}
-                className="issue-input"
-              />
+<input
+  type="date"
+  name="due_date"
+  value={form.due_date}
+  onChange={handleChange}
+  className="issue-input"
+  min={form.start_date || new Date().toISOString().split("T")[0]}
+/>
+
             </div>
           </div>
 

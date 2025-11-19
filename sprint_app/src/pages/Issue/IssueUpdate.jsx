@@ -32,12 +32,24 @@ export default function IssueUpdate({ index, issue, isEmployee, onClose }) {
 
   const loadEmployees = async (dept) => {
     if (!dept) return;
+
     const all = await getEmployeeList();
-    const list = all ? Object.values(all) : [];
+
+    // ⭐ FIXED: Preserve key for employees also
+    const list = all
+      ? Object.entries(all).map(([key, val]) => ({ key, ...val }))
+      : [];
+
     const filtered = list.filter((emp) => {
-      const empDept = emp.department || emp.dept || emp.departmentname || emp.department_name;
+      const empDept =
+        emp.department ||
+        emp.dept ||
+        emp.departmentname ||
+        emp.department_name;
+
       return String(empDept).toLowerCase() === String(dept).toLowerCase();
     });
+
     setEmployees(filtered);
   };
 
@@ -48,11 +60,14 @@ export default function IssueUpdate({ index, issue, isEmployee, onClose }) {
   const handleDeptChange = async (e) => {
     const dept = e.target.value;
     setForm({ ...form, department: dept, assigned_to: "" });
+
     await loadEmployees(dept);
   };
 
   const handleSubmit = async () => {
-    await updateIssue(index, form);
+    // ⭐ FIXED: use Firebase key instead of index
+    await updateIssue(issue.key, form);
+
     alert("Issue updated successfully!");
     if (typeof onClose === "function") onClose();
   };
@@ -105,19 +120,35 @@ export default function IssueUpdate({ index, issue, isEmployee, onClose }) {
                   <label>Assign To</label>
                   <select name="assigned_to" value={form.assigned_to || ""} onChange={handleChange}>
                     <option value="">Select Employee</option>
-                    {employees.map((emp)=> <option key={emp.empid} value={emp.empid}>{emp.empid} - {emp.name}</option>)}
+                    {employees.map((emp)=> (
+                      <option key={emp.key} value={emp.empid}>
+                        {emp.empid} - {emp.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="form-row two-cols">
                   <div>
                     <label>Start Date</label>
-                    <input type="date" name="start_date" value={form.start_date || ""} onChange={handleChange} />
+<input
+  type="date"
+  name="start_date"
+  value={form.start_date || ""}
+  onChange={handleChange}
+  min={new Date().toISOString().split("T")[0]}
+/>
                   </div>
 
                   <div>
                     <label>Due Date</label>
-                    <input type="date" name="due_date" value={form.due_date || ""} onChange={handleChange} />
+<input
+  type="date"
+  name="due_date"
+  value={form.due_date || ""}
+  onChange={handleChange}
+  min={form.start_date || new Date().toISOString().split("T")[0]}
+/>
                   </div>
                 </div>
 
@@ -169,6 +200,7 @@ export default function IssueUpdate({ index, issue, isEmployee, onClose }) {
             <div className="form-actions">
               <button type="submit" className="save-btn">Save Changes</button>
             </div>
+
           </form>
         </div>
       </aside>
