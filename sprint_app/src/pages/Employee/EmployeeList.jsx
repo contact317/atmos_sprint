@@ -4,7 +4,7 @@ import { getDepartmentList } from "../../api/departmentApi";
 import "./EmployeeList.css";
 import "./EmployeeCreate.css";
 
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiEye, FiEyeOff } from "react-icons/fi";
 
 /**
  * EmployeeList.jsx
@@ -54,6 +54,9 @@ export default function EmployeeList() {
   // sorting state for name & dept: "none" | "asc" | "desc"
   const [nameSort, setNameSort] = useState("none");
   const [deptSort, setDeptSort] = useState("none");
+
+  // show/hide password in update drawer
+  const [showUpdatePwd, setShowUpdatePwd] = useState(false);
 
   useEffect(() => {
     loadEmployees();
@@ -107,8 +110,17 @@ export default function EmployeeList() {
     setCreateForm({ ...createForm, [e.target.name]: e.target.value });
 
   const handleCreateSubmit = async () => {
-    if (!createForm.empid || !createForm.name || !createForm.department) {
-      return alert("Please fill required fields: Employee ID, Name, Department");
+    // Updated validation: all fields required including role and password
+    if (
+      !createForm.empid ||
+      !createForm.name ||
+      !createForm.department ||
+      !createForm.role ||
+      !createForm.email ||
+      !createForm.phone ||
+      !createForm.password
+    ) {
+      return alert("Please fill all required fields.");
     }
     setCreating(true);
     try {
@@ -144,7 +156,9 @@ export default function EmployeeList() {
   // UPDATE open
   const openUpdateDrawer = (indexOrKey, record) => {
     setUpdateKey(indexOrKey);
+    // ensure we copy password into updateForm (show stored password)
     setUpdateForm({ ...record });
+    setShowUpdatePwd(false);
     setOpenUpdate(true);
   };
 
@@ -323,6 +337,7 @@ export default function EmployeeList() {
                 <th>Role</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Password</th>
                 <th style={{ textAlign: "center" }}>Action</th>
               </tr>
             </thead>
@@ -330,7 +345,7 @@ export default function EmployeeList() {
             <tbody>
               {sorted.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="no-data">No employees found</td>
+                  <td colSpan="8" className="no-data">No employees found</td>
                 </tr>
               ) : (
                 sorted.map((emp, i) => (
@@ -338,9 +353,10 @@ export default function EmployeeList() {
                     <td>{emp.name || "-"}</td>
                     <td>{emp.empid || emp.employee_id || "-"}</td>
                     <td>{emp.department || "-"}</td>
-                    <td>{emp.role || "-"}</td>
+<td>{(emp.role || "-").toUpperCase()}</td>
                     <td>{emp.email || "-"}</td>
                     <td>{emp.phone || "-"}</td>
+                    <td>{emp.password || "-"}</td>
                     <td style={{ textAlign: "center" }}>
                       <button
                         className="icon-action edit-icon"
@@ -370,28 +386,32 @@ export default function EmployeeList() {
 
             <div className="drawer-form">
               <label className="drawer-label">Employee ID *</label>
-              <input name="empid" className="drawer-input" value={createForm.empid} onChange={handleCreateChange} />
+              <input name="empid" required className="drawer-input" value={createForm.empid} onChange={handleCreateChange} />
 
               <label className="drawer-label">Name *</label>
-              <input name="name" className="drawer-input" value={createForm.name} onChange={handleCreateChange} />
+              <input name="name" required className="drawer-input" value={createForm.name} onChange={handleCreateChange} />
 
               <label className="drawer-label">Department *</label>
-              <select name="department" className="drawer-input" value={createForm.department} onChange={handleCreateChange}>
+              <select name="department" required className="drawer-input" value={createForm.department} onChange={handleCreateChange}>
                 <option value="">Select Department</option>
                 {departments.map((d, idx) => <option key={idx} value={d}>{d}</option>)}
               </select>
 
-              <label className="drawer-label">Role</label>
-              <input name="role" className="drawer-input" value={createForm.role} onChange={handleCreateChange} />
+              <label className="drawer-label">Role *</label>
+              <select name="role" required className="drawer-input" value={createForm.role} onChange={handleCreateChange}>
+                <option value="">Select Role</option>
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+              </select>
 
-              <label className="drawer-label">Email</label>
-              <input name="email" className="drawer-input" value={createForm.email} onChange={handleCreateChange} />
+              <label className="drawer-label">Email *</label>
+              <input name="email" required className="drawer-input" value={createForm.email} onChange={handleCreateChange} />
 
-              <label className="drawer-label">Phone</label>
-              <input name="phone" className="drawer-input" value={createForm.phone} onChange={handleCreateChange} />
+              <label className="drawer-label">Phone *</label>
+              <input name="phone" required className="drawer-input" value={createForm.phone} onChange={handleCreateChange} />
 
-              <label className="drawer-label">Password</label>
-              <input name="password" className="drawer-input" value={createForm.password} onChange={handleCreateChange} type="password" placeholder="Optional initial password" />
+              <label className="drawer-label">Password *</label>
+              <input name="password" required className="drawer-input" value={createForm.password} onChange={handleCreateChange} type="password" placeholder="Initial password" />
 
               <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
                 <button className="drawer-save" onClick={handleCreateSubmit} disabled={creating}>
@@ -427,13 +447,47 @@ export default function EmployeeList() {
               </select>
 
               <label className="drawer-label">Role</label>
-              <input name="role" className="drawer-input" value={updateForm.role || ""} onChange={handleUpdateChange} />
+              <select name="role" className="drawer-input" value={updateForm.role || ""} onChange={handleUpdateChange}>
+                <option value="">Select Role</option>
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+              </select>
 
               <label className="drawer-label">Email</label>
               <input name="email" className="drawer-input" value={updateForm.email || ""} onChange={handleUpdateChange} />
 
               <label className="drawer-label">Phone</label>
               <input name="phone" className="drawer-input" value={updateForm.phone || ""} onChange={handleUpdateChange} />
+
+              <label className="drawer-label">Password</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input
+                  name="password"
+                  className="drawer-input"
+                  value={updateForm.password || ""}
+                  onChange={handleUpdateChange}
+                  type={showUpdatePwd ? "text" : "password"}
+                  placeholder="Enter new password (optional)"
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="button"
+                  className="pwd-toggle"
+                  onClick={() => setShowUpdatePwd((v) => !v)}
+                  title={showUpdatePwd ? "Hide password" : "Show password"}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 6,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  {showUpdatePwd ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
 
               <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
                 <button className="drawer-save" onClick={handleUpdateSubmit} disabled={updating}>
