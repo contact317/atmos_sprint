@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, ListTodo, AlertCircle, Settings } from "lucide-react";
+import { Home, ListTodo, AlertCircle, Settings, FileText } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
 import "./Sidebar.css";
@@ -18,13 +18,19 @@ export default function Sidebar({ collapsed }) {
 
           {/* DASHBOARD */}
           <NavLink to="/dashboard" className="menu-item">
-<Home size={20} strokeWidth={1.8} />
+            <Home size={20} strokeWidth={1.8} />
             <span className="label">Dashboard</span>
+          </NavLink>
+
+          {/* REQUIREMENTS — added under Dashboard */}
+          <NavLink to="/requirements" className="menu-item">
+            <FileText size={20} strokeWidth={1.8} />
+            <span className="label">Requirements</span>
           </NavLink>
 
           {/* SPRINTS — visible to ALL */}
           <NavLink to="/sprints" className="menu-item">
-<ListTodo size={20} strokeWidth={1.8} />
+            <ListTodo size={20} strokeWidth={1.8} />
             <span className="label">
               {isEmployee ? "My Sprints" : "Sprints"}
             </span>
@@ -32,7 +38,7 @@ export default function Sidebar({ collapsed }) {
 
           {/* ISSUES — visible to ALL */}
           <NavLink to="/issues" className="menu-item">
-<AlertCircle size={20} strokeWidth={1.8} />
+            <AlertCircle size={20} strokeWidth={1.8} />
             <span className="label">
               {isEmployee ? "My Issues" : "Issues"}
             </span>
@@ -41,7 +47,7 @@ export default function Sidebar({ collapsed }) {
           {/* SETTINGS — manager only (optional) */}
           {!isEmployee && (
             <NavLink to="/settings" className="menu-item">
-<Settings size={20} strokeWidth={1.8} />
+              <Settings size={20} strokeWidth={1.8} />
               <span className="label">Settings</span>
             </NavLink>
           )}

@@ -10,11 +10,23 @@ import "./IssueCreate.css";
 export default function IssueCreate({ onClose }) {
 
   const [applications, setApplications] = useState([]);
+  const [requirements, setRequirements] = useState([]); // kept from earlier change (no wiring)
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
+  // Read auth user to decide employee vs manager
+  const authUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("authUser")) || {};
+    } catch {
+      return {};
+    }
+  })();
+  const isEmployee = authUser?.role === "employee";
+
   const [form, setForm] = useState({
     applicationname: "",
+    requirement: "",
     title: "",
     description: "",
     department: "",
@@ -29,6 +41,11 @@ export default function IssueCreate({ onClose }) {
   useEffect(() => {
     loadApplications();
     loadDepartments();
+    // If an employee, prefill department and keep disabled (we'll set in effect below)
+    if (isEmployee && authUser.department) {
+      setForm((f) => ({ ...f, department: authUser.department }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadApplications = async () => {
@@ -41,36 +58,45 @@ export default function IssueCreate({ onClose }) {
     if (Array.isArray(data)) setDepartments(data);
   };
 
-  // Load employees when department changes
+  // Load employees when department changes (or when prefilled for employee)
   useEffect(() => {
     if (form.department) {
       loadEmployees();
+    } else {
+      setEmployees([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.department]);
 
-const loadEmployees = async () => {
-  const all = await getEmployeeList();
-  const list = all ? Object.values(all) : [];
+  const loadEmployees = async () => {
+    const all = await getEmployeeList();
+    const list = all ? Object.values(all) : [];
 
-  const filtered = list.filter(emp => {
-    const empDept =
-      emp.department || emp.dept || emp.departmentname || emp.department_name;
+    const filtered = list.filter(emp => {
+      const empDept =
+        emp.department || emp.dept || emp.departmentname || emp.department_name;
+      return (
+        String(empDept).toLowerCase() ===
+        String(form.department).toLowerCase()
+      );
+    });
 
-    return (
-      String(empDept).toLowerCase() ===
-      String(form.department).toLowerCase()
-    );
-  });
-
-  setEmployees(filtered);
-};
-
+    setEmployees(filtered);
+  };
 
   // Update any field
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // If user is employee and trying to change department (shouldn't happen since it's disabled),
+    // ignore department changes.
+    if (isEmployee && name === "department") {
+      return;
+    }
+    setForm({ ...form, [name]: value });
+  };
 
   const handleSubmit = async () => {
+    // required fields unchanged
     if (
       !form.applicationname ||
       !form.title ||
@@ -85,9 +111,24 @@ const loadEmployees = async () => {
       return;
     }
 
-    await addIssue(form);
+    // Build payload and add assignment metadata
+    const payload = {
+      ...form,
+      createdAt: new Date().toISOString(),
+      // who assigned/created this issue
+      assigned_by: isEmployee ? authUser.empid : (authUser.empid || "manager"),
+      assigner_name: isEmployee ? (authUser.name || authUser.empid) : (authUser.name || "Manager"),
+      // we also include assignee_name for easier display
+      assignee_name: (() => {
+        const emp = employees.find(e => String(e.empid) === String(form.assigned_to));
+        if (emp) return emp.name || emp.empid;
+        return "";
+      })()
+    };
+
+    await addIssue(payload);
     alert("Issue created successfully!");
-    onClose(); // close drawer
+    if (typeof onClose === "function") onClose();
   };
 
   return (
@@ -119,6 +160,24 @@ const loadEmployees = async () => {
               {applications.map((app, index) => (
                 <option key={index} value={app}>
                   {app}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* REQUIREMENT DROPDOWN (optional) */}
+          <div>
+            <label className="issue-label">Select Requirement (Optional)</label>
+            <select
+              name="requirement"
+              value={form.requirement}
+              onChange={handleChange}
+              className="issue-input"
+            >
+              <option value="">Select Requirement</option>
+              {requirements.map((req, index) => (
+                <option key={index} value={req}>
+                  {req}
                 </option>
               ))}
             </select>
@@ -158,6 +217,7 @@ const loadEmployees = async () => {
               value={form.department}
               onChange={handleChange}
               className="issue-input"
+              disabled={isEmployee} // ❗ Employee: auto-selected and disabled
             >
               <option value="">Select Department</option>
               {departments.map((dept, index) => (
@@ -166,6 +226,7 @@ const loadEmployees = async () => {
                 </option>
               ))}
             </select>
+            {isEmployee && <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Department auto-set to your department.</div>}
           </div>
 
           {/* ASSIGNED TO */}
@@ -180,39 +241,37 @@ const loadEmployees = async () => {
             >
               <option value="">Select Employee</option>
               {employees.map((emp) => (
-<option key={emp.empid} value={emp.empid}>
-  {emp.empid} - {emp.name}
-</option>
-
+                <option key={emp.empid} value={emp.empid}>
+                  {emp.empid} - {emp.name}
+                </option>
               ))}
             </select>
           </div>
 
-          {/* START + DUE DATE */}
+          {/* DATES */}
           <div style={{ display: "flex", gap: "15px" }}>
             <div style={{ flex: 1 }}>
               <label className="issue-label">Start Date</label>
-<input
-  type="date"
-  name="start_date"
-  value={form.start_date}
-  onChange={handleChange}
-  className="issue-input"
-  min={new Date().toISOString().split("T")[0]}
-/>
-
+              <input
+                type="date"
+                name="start_date"
+                value={form.start_date}
+                onChange={handleChange}
+                className="issue-input"
+                min={new Date().toISOString().split("T")[0]}
+              />
             </div>
+
             <div style={{ flex: 1 }}>
               <label className="issue-label">Due Date</label>
-<input
-  type="date"
-  name="due_date"
-  value={form.due_date}
-  onChange={handleChange}
-  className="issue-input"
-  min={form.start_date || new Date().toISOString().split("T")[0]}
-/>
-
+              <input
+                type="date"
+                name="due_date"
+                value={form.due_date}
+                onChange={handleChange}
+                className="issue-input"
+                min={form.start_date || new Date().toISOString().split("T")[0]}
+              />
             </div>
           </div>
 

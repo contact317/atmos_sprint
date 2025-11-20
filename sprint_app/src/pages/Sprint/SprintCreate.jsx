@@ -7,6 +7,7 @@ import "./SprintCreate.css";
 
 export default function SprintCreate({ onClose }) {
   const [apps, setApps] = useState([]);
+  const [requirements, setRequirements] = useState([]); // ⭐ NEW FIELD
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
@@ -15,6 +16,7 @@ export default function SprintCreate({ onClose }) {
     priority: "",
     description: "",
     applicationname: "",
+    requirement: "",   // ⭐ NEW FIELD
     department: "",
     assigned_to: "",
     start_date: "",
@@ -41,24 +43,22 @@ export default function SprintCreate({ onClose }) {
     if (form.department) loadEmployees();
   }, [form.department]);
 
-const loadEmployees = async () => {
-  const all = await getEmployeeList();
-  const list = all ? Object.values(all) : [];
+  const loadEmployees = async () => {
+    const all = await getEmployeeList();
+    const list = all ? Object.values(all) : [];
 
-  const filtered = list.filter((emp) => {
-    const empDept =
-      emp.department || emp.dept || emp.departmentname || emp.department_name;
+    const filtered = list.filter((emp) => {
+      const empDept =
+        emp.department || emp.dept || emp.departmentname || emp.department_name;
 
-    return (
-      String(empDept).toLowerCase() ===
-      String(form.department).toLowerCase()
-    );
-  });
+      return (
+        String(empDept).toLowerCase() ===
+        String(form.department).toLowerCase()
+      );
+    });
 
-  setEmployees(filtered);
-};
-
-
+    setEmployees(filtered);
+  };
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -82,26 +82,22 @@ const loadEmployees = async () => {
 
     await addSprint(form);
     alert("Sprint created successfully!");
-    // Close drawer after successful creation (one of the required exit options)
     if (typeof onClose === "function") onClose();
   };
 
-return (
-  <>
-    {/* BACKDROP (does not close on click) */}
-    <div className="drawer-backdrop"></div>
+  return (
+    <>
+      <div className="drawer-backdrop"></div>
 
-    {/* FLOATING CLOSE BUTTON OUTSIDE DRAWER */}
-    <button
-      className="drawer-close-floating"
-      onClick={() => typeof onClose === "function" && onClose()}
-    >
-      ×
-    </button>
+      <button
+        className="drawer-close-floating"
+        onClick={() => typeof onClose === "function" && onClose()}
+      >
+        ×
+      </button>
 
-    {/* DRAWER PANEL */}
-    <div className="sprint-panel open">
-      <h2 className="panel-title">Create Sprint</h2>
+      <div className="sprint-panel open">
+        <h2 className="panel-title">Create Sprint</h2>
 
         {/* APPLICATION */}
         <label className="sprint-label">Select Application</label>
@@ -115,6 +111,22 @@ return (
           {apps.map((app, index) => (
             <option key={index} value={app}>
               {app}
+            </option>
+          ))}
+        </select>
+
+        {/* ⭐ REQUIREMENT DROPDOWN — NEW FIELD */}
+        <label className="sprint-label">Select Requirement (Optional)</label>
+        <select
+          name="requirement"
+          value={form.requirement}
+          onChange={handleChange}
+          className="sprint-select"
+        >
+          <option value="">Select Requirement</option>
+          {requirements.map((req, index) => (
+            <option key={index} value={req}>
+              {req}
             </option>
           ))}
         </select>
@@ -165,10 +177,9 @@ return (
         >
           <option value="">Select Employee</option>
           {employees.map((emp) => (
-<option key={emp.empid} value={emp.empid}>
-  {emp.empid} - {emp.name}
-</option>
-
+            <option key={emp.empid} value={emp.empid}>
+              {emp.empid} - {emp.name}
+            </option>
           ))}
         </select>
 
@@ -176,28 +187,26 @@ return (
         <div style={{ display: "flex", gap: "14px" }}>
           <div style={{ flex: 1 }}>
             <label className="sprint-label">Start Date</label>
-<input
-  type="date"
-  name="start_date"
-  value={form.start_date}
-  onChange={handleChange}
-  className="sprint-input"
-  min={new Date().toISOString().split("T")[0]}
-/>
-
+            <input
+              type="date"
+              name="start_date"
+              value={form.start_date}
+              onChange={handleChange}
+              className="sprint-input"
+              min={new Date().toISOString().split("T")[0]}
+            />
           </div>
 
           <div style={{ flex: 1 }}>
             <label className="sprint-label">Due Date</label>
-<input
-  type="date"
-  name="due_date"
-  value={form.due_date}
-  onChange={handleChange}
-  className="sprint-input"
-  min={form.start_date || new Date().toISOString().split("T")[0]}
-/>
-
+            <input
+              type="date"
+              name="due_date"
+              value={form.due_date}
+              onChange={handleChange}
+              className="sprint-input"
+              min={form.start_date || new Date().toISOString().split("T")[0]}
+            />
           </div>
         </div>
 
@@ -229,7 +238,6 @@ return (
           <option>Completed</option>
         </select>
 
-        {/* SUBMIT */}
         <button className="save-btn" onClick={handleSubmit}>
           Create Sprint
         </button>

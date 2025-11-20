@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, Bell, UserCircle, Users, Mail, Globe, User } from "lucide-react";
+import { Menu, Bell, UserCircle, Users, Mail, Globe, User, Grip } from "lucide-react";
 
 import {
   HiOutlineBell,
@@ -15,28 +15,17 @@ import "./TopBar.css";
 
 import { getEmployeeList, updateEmployee } from "../api/employeeApi";
 
-/**
- * TopBar (premium profile dropdown)
- *
- * - Option B style (Teams / Outlook / Portal / Employee icons)
- * - Shows logged in user's name, department and role (from localStorage.authUser)
- * - "Employee" icon routes to /employees (uses useNavigate)
- * - Settings -> Change Password uses employeeApi to update password
- * - Details shows a small details panel inside dropdown
- *
- * NOTE: This component only updates UI and uses existing APIs. No other app logic changed.
- */
-
 export default function TopBar({ title, onToggleSidebar }) {
   const [open, setOpen] = useState(false);
+  const [appsOpen, setAppsOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showChangePwd, setShowChangePwd] = useState(false);
   const [pwdForm, setPwdForm] = useState({ current: "", newpwd: "", confirm: "" });
   const [statusMsg, setStatusMsg] = useState("");
   const navigate = useNavigate();
   const ref = useRef();
+  const appsRef = useRef();
 
-  // user from localStorage
   const authUser = (() => {
     try {
       return JSON.parse(localStorage.getItem("authUser")) || {};
@@ -50,13 +39,15 @@ export default function TopBar({ title, onToggleSidebar }) {
   const displayDept = authUser.department || authUser.dept || "-";
   const empId = authUser.empid || authUser.employee_id || authUser.empId || null;
 
-  // close dropdown when clicked outside
   useEffect(() => {
     function onDoc(e) {
       if (ref.current && !ref.current.contains(e.target)) {
         setOpen(false);
         setShowDetails(false);
         setShowChangePwd(false);
+      }
+      if (appsRef.current && !appsRef.current.contains(e.target)) {
+        setAppsOpen(false);
       }
     }
     document.addEventListener("click", onDoc);
@@ -68,14 +59,12 @@ export default function TopBar({ title, onToggleSidebar }) {
     navigate("/signin");
   };
 
-  // navigate helpers
   const openEmployees = () => {
-    setOpen(false);
+    setAppsOpen(false);
     navigate("/employees");
   };
 
   const openOutlook = () => {
-    // if you have a URL you can replace this
     window.open("https://outlook.office.com", "_blank");
   };
 
@@ -84,13 +73,9 @@ export default function TopBar({ title, onToggleSidebar }) {
   };
 
   const openPortal = () => {
-    // replace with internal portal URL if any
     window.open("/", "_blank");
   };
 
-  // Change password flow:
-  // 1. Fetch employee list, find the record for logged user (match empid)
-  // 2. Call updateEmployee(key, updatedRecordWithNewPassword)
   const handlePwdChange = async () => {
     setStatusMsg("");
     if (!empId) {
@@ -107,10 +92,9 @@ export default function TopBar({ title, onToggleSidebar }) {
     }
 
     try {
-      // get all employees and find the correct entry
       const all = await getEmployeeList();
-      const list = all ? Object.entries(all) : []; // entries => [key, value]
-      // try different possible id keys inside employee object
+      const list = all ? Object.entries(all) : [];
+
       const foundEntry = list.find(([key, val]) => {
         const v = val || {};
         const candidateIds = [v.empid, v.employee_id, v.employeeId, v.empId, v.id];
@@ -123,14 +107,11 @@ export default function TopBar({ title, onToggleSidebar }) {
       }
 
       const [recordKey, recordValue] = foundEntry;
-      // prepare updated object: preserve existing fields, update password
       const updated = { ...recordValue, password: pwdForm.newpwd };
 
-      // call API — updateEmployee expects index/key
       await updateEmployee(recordKey, updated);
 
       setStatusMsg("Password updated successfully.");
-      // clear form and close
       setPwdForm({ current: "", newpwd: "", confirm: "" });
       setShowChangePwd(false);
       setOpen(false);
@@ -142,186 +123,239 @@ export default function TopBar({ title, onToggleSidebar }) {
 
   return (
     <header className="topbar">
-<div className="topbar-left">
-  <button
-    className="menu-btn"
-    onClick={onToggleSidebar}
-    aria-label="toggle menu"
-    title="Toggle menu"
-  >
-    <Menu size={24} strokeWidth={1.8} />
-  </button>
+      <div className="topbar-left">
+        <button
+          className="menu-btn"
+          onClick={onToggleSidebar}
+          aria-label="toggle menu"
+          title="Toggle menu"
+        >
+          <Menu size={24} strokeWidth={1.8} />
+        </button>
 
-  <div className="topbar-title">{title}</div>
-</div>
+        <div className="topbar-title">{title}</div>
+      </div>
 
-<div className="topbar-right">
-  <button
-    className="icon-btn"
-    aria-label="notifications"
-    title="Notifications"
-    onClick={() => {
-      navigate("/notifications", { replace: false });
-    }}
-  >
-    <Bell size={20} strokeWidth={1.8} color="#4f755a" />
-  </button>
+      <div className="topbar-right">
 
-  <div className="profile-root" ref={ref}>
-    <button
-      className="icon-btn profile-circle"
-      onClick={() => setOpen((v) => !v)}
-      aria-haspopup="true"
-      title="Profile menu"
-    >
-      <UserCircle size={22} strokeWidth={1.8} color="#4f755a" />
-    </button>
+        {/* ===== Notifications ===== */}
+        <button
+          className="icon-btn"
+          aria-label="notifications"
+          title="Notifications"
+          onClick={() => navigate("/notifications")}
+        >
+          <Bell size={20} strokeWidth={1.8} color="#4f755a" />
+        </button>
 
-    {open && (
-      <div className="profile-menu" role="menu" aria-label="Profile menu">
-
-        {/* ICON ROW */}
-        <div className="profile-icon-row">
+        {/* ===== Profile ===== */}
+        <div className="profile-root" ref={ref}>
           <button
-            className="small-icon"
-            title="Teams"
-            onClick={openTeams}
+            className="icon-btn profile-circle"
+            onClick={() => setOpen((v) => !v)}
+            aria-haspopup="true"
+            title="Profile menu"
           >
-            <Users size={20} strokeWidth={1.6} />
-            <div className="small-icon-label">Teams</div>
+            <UserCircle size={22} strokeWidth={1.8} color="#4f755a" />
           </button>
 
-          <button
-            className="small-icon"
-            title="Outlook"
-            onClick={openOutlook}
-          >
-            <Mail size={20} strokeWidth={1.6} />
-            <div className="small-icon-label">Outlook</div>
-          </button>
+          {open && (
+            <div className="profile-menu" role="menu" aria-label="Profile menu">
+              <div className="profile-header">
+                <div className="profile-avatar">
+                  <UserCircle size={36} strokeWidth={1.8} color="#4f755a" />
+                </div>
 
-          <button
-            className="small-icon"
-            title="Portal"
-            onClick={openPortal}
-          >
-            <Globe size={20} strokeWidth={1.6} />
-            <div className="small-icon-label">Portal</div>
-          </button>
+                <div className="profile-meta">
+                  <div className="profile-name">{displayName}</div>
+                  <div className="profile-sub">{displayRole} • {displayDept}</div>
+                </div>
+              </div>
 
-          <button
-            className="small-icon"
-            title="Employees"
-            onClick={openEmployees}
-          >
-            <User size={20} strokeWidth={1.6} />
-            <div className="small-icon-label">Employees</div>
-          </button>
-        </div>
+              <div className="profile-divider" />
 
-        <div className="profile-divider" />
+              <div className="profile-actions">
+                <button
+                  className="profile-action"
+                  onClick={() => { setShowDetails(true); setShowChangePwd(false); }}
+                >
+                  <span className="profile-action-left">Details</span>
+                </button>
 
-        {/* PROFILE HEADER */}
-        <div className="profile-header">
-          <div className="profile-avatar">
-            <UserCircle size={36} strokeWidth={1.8} color="#4f755a" />
-          </div>
+                <button
+                  className="profile-action"
+                  onClick={() => { setShowChangePwd(true); setShowDetails(false); }}
+                >
+                  <span className="profile-action-left">Settings (Change Password)</span>
+                </button>
+              </div>
 
-          <div className="profile-meta">
-            <div className="profile-name">{displayName}</div>
-            <div className="profile-sub">
-              {displayRole} • {displayDept}
+              <div className="profile-divider" />
+
+              <div style={{ padding: "10px" }}>
+                <button className="logout-btn" onClick={handleLogout}>
+                  ⟲ Logout
+                </button>
+              </div>
+
+              {showDetails && (
+                <div className="profile-details">
+                  <div className="detail-row"><strong>Name:</strong> <span>{displayName}</span></div>
+                  <div className="detail-row"><strong>Emp ID:</strong> <span>{empId || "-"}</span></div>
+                  <div className="detail-row"><strong>Role:</strong> <span>{displayRole}</span></div>
+                  <div className="detail-row"><strong>Department:</strong> <span>{displayDept}</span></div>
+                </div>
+              )}
+
+              {showChangePwd && (
+                <div className="change-pwd-panel">
+                  <label className="pwd-label">Current Password</label>
+                  <input
+                    type="password"
+                    value={pwdForm.current}
+                    onChange={(e) => setPwdForm({ ...pwdForm, current: e.target.value })}
+                    className="pwd-input"
+                  />
+
+                  <label className="pwd-label">New Password</label>
+                  <input
+                    type="password"
+                    value={pwdForm.newpwd}
+                    onChange={(e) => setPwdForm({ ...pwdForm, newpwd: e.target.value })}
+                    className="pwd-input"
+                  />
+
+                  <label className="pwd-label">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={pwdForm.confirm}
+                    onChange={(e) => setPwdForm({ ...pwdForm, confirm: e.target.value })}
+                    className="pwd-input"
+                  />
+
+                  {statusMsg && <div className="pwd-status">{statusMsg}</div>}
+
+                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                    <button className="pwd-save" onClick={handlePwdChange}>Save</button>
+                    <button className="pwd-cancel" onClick={() => setShowChangePwd(false)}>Cancel</button>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="profile-actions">
+        {/* ===== Apps Launcher (Grip LAST) ===== */}
+        <div className="apps-root" ref={appsRef} style={{ position: "relative" }}>
           <button
-            className="profile-action"
-            onClick={() => {
-              setShowDetails(true);
-              setShowChangePwd(false);
-            }}
+            className="icon-btn"
+            aria-label="apps"
+            title="Apps"
+            onClick={() => setAppsOpen((v) => !v)}
           >
-            <span className="profile-action-left">Details</span>
+            <Grip size={20} strokeWidth={1.8} color="#4f755a" />
           </button>
 
-          <button
-            className="profile-action"
-            onClick={() => {
-              setShowChangePwd(true);
-              setShowDetails(false);
-            }}
-          >
-            <span className="profile-action-left">Settings (Change Password)</span>
-          </button>
-        </div>
+          {appsOpen && (
+            <div
+              className="apps-menu"
+              role="menu"
+              aria-label="Apps menu"
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 44,
+                width: 360,
+                background: "#ffffff",
+                borderRadius: 12,
+                boxShadow: "0 12px 40px rgba(15,23,42,0.12)",
+                padding: 14,
+                zIndex: 1000,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Apps</div>
+                <div style={{ fontSize: 12, color: "#666" }}>{displayName}</div>
+              </div>
 
-        <div className="profile-divider" />
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gap: 10,
+                }}
+              >
+                <button className="app-tile" onClick={openTeams} title="Teams" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Users size={20} strokeWidth={1.6} />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Teams</div>
+                </button>
 
-        <div style={{ padding: "10px" }}>
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            ⟲ Logout
-          </button>
-        </div>
+                <button className="app-tile" onClick={openOutlook} title="Outlook" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Mail size={20} strokeWidth={1.6} />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Outlook</div>
+                </button>
 
-        {/* DETAILS PANEL */}
-        {showDetails && (
-          <div className="profile-details">
-            <div className="detail-row"><strong>Name:</strong> <span>{displayName}</span></div>
-            <div className="detail-row"><strong>Emp ID:</strong> <span>{empId || "-"}</span></div>
-            <div className="detail-row"><strong>Role:</strong> <span>{displayRole}</span></div>
-            <div className="detail-row"><strong>Department:</strong> <span>{displayDept}</span></div>
-          </div>
-        )}
+                <button className="app-tile" onClick={openPortal} title="Portal" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Globe size={20} strokeWidth={1.6} />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Portal</div>
+                </button>
 
-        {/* CHANGE PASSWORD PANEL */}
-        {showChangePwd && (
-          <div className="change-pwd-panel">
-            <label className="pwd-label">Current Password</label>
-            <input
-              type="password"
-              value={pwdForm.current}
-              onChange={(e) => setPwdForm({ ...pwdForm, current: e.target.value })}
-              className="pwd-input"
-              placeholder="Enter current password"
-            />
+                <button className="app-tile" onClick={openEmployees} title="Employees" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <User size={20} strokeWidth={1.6} />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Employees</div>
+                </button>
 
-            <label className="pwd-label">New Password</label>
-            <input
-              type="password"
-              value={pwdForm.newpwd}
-              onChange={(e) => setPwdForm({ ...pwdForm, newpwd: e.target.value })}
-              className="pwd-input"
-              placeholder="Enter new password"
-            />
-
-            <label className="pwd-label">Confirm New Password</label>
-            <input
-              type="password"
-              value={pwdForm.confirm}
-              onChange={(e) => setPwdForm({ ...pwdForm, confirm: e.target.value })}
-              className="pwd-input"
-              placeholder="Confirm new password"
-            />
-
-            {statusMsg && <div className="pwd-status">{statusMsg}</div>}
-
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button className="pwd-save" onClick={handlePwdChange}>Save</button>
-              <button className="pwd-cancel" onClick={() => setShowChangePwd(false)}>Cancel</button>
+                <div style={{ gridColumn: "span 3", marginTop: 6, fontSize: 12, color: "#666" }}>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
       </div>
-    )}
-  </div>
-</div>
-
     </header>
   );
 }

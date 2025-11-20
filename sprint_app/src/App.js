@@ -8,10 +8,13 @@ import EmployeeList from "./pages/Employee/EmployeeList";
 import IssueList from "./pages/Issue/IssueList";
 import IssueCreate from "./pages/Issue/IssueCreate";
 import IssueUpdate from "./pages/Issue/IssueUpdate";
+import EmployeeIssues from "./pages/Issue/EmployeeIssues";
 
 import SprintList from "./pages/Sprint/SprintList";
 import SprintCreate from "./pages/Sprint/SprintCreate";
 import SprintUpdate from "./pages/Sprint/SprintUpdate";
+
+import Requirements from "./pages/Requirements/Requirements"; // ✅ imported
 
 import Signin from "./pages/Login/Signin";
 import Signup from "./pages/Login/Signup";
@@ -139,6 +142,29 @@ export default function App() {
             <ManagerRoute>
               <MainLayout title="Update Sprint">
                 <SprintUpdate />
+              </MainLayout>
+            </ManagerRoute>
+          }
+        />
+
+        {/* Requirements */}
+        <Route
+          path="/requirements"
+          element={
+            <ProtectedRoute>
+              <MainLayout title="Requirements">
+                <Requirements />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+          {/* Employee Issues - Manager only */}
+        <Route
+          path="/employee-issues"
+          element={
+            <ManagerRoute>
+              <MainLayout title="Employee Issues">
+                <EmployeeIssues />
               </MainLayout>
             </ManagerRoute>
           }
