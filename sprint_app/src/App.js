@@ -14,7 +14,6 @@ import SprintList from "./pages/Sprint/SprintList";
 import SprintCreate from "./pages/Sprint/SprintCreate";
 import SprintUpdate from "./pages/Sprint/SprintUpdate";
 
-import Requirements from "./pages/Requirements/Requirements"; // ✅ imported
 
 import Signin from "./pages/Login/Signin";
 import Signup from "./pages/Login/Signup";
