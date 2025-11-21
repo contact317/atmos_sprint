@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { getIssueList } from "../../api/issueApi";
 import "./IssueList.css";
 
-import { Eye, Pencil } from "lucide-react";
+import { HiOutlineEye, HiOutlinePencilAlt } from "react-icons/hi";
 
 import IssueCreate from "./IssueCreate";
 import IssueUpdate from "./IssueUpdate";
 import IssueView from "./IssueView";
+
+import { useNavigate } from "react-router-dom";
 
 export default function IssueList() {
   const [issues, setIssues] = useState([]);
@@ -19,9 +21,11 @@ export default function IssueList() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
 
-  const authUser = JSON.parse(localStorage.getItem("authUser"));
+  const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
   const isEmployee = authUser?.role === "employee";
   const loggedEmp = authUser?.empid;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadIssues();
@@ -29,21 +33,18 @@ export default function IssueList() {
 
   const loadIssues = async () => {
     const data = await getIssueList();
+    let issueArray = data ? Object.values(data) : [];
 
-    // ⭐ FIXED: Preserve Firebase key
-    let issueArray = data
-      ? Object.entries(data).map(([key, val]) => ({ key, ...val }))
-      : [];
-
-    // Employee-only viewing
+    // Employee-only viewing: if logged user is employee, show only assigned_to or created by them OR assigned to them
     if (isEmployee) {
       issueArray = issueArray.filter(
         (i) =>
-          String(i.assigned_to || i.assignedTo) === String(loggedEmp)
+          String(i.assigned_to || i.assignedTo) === String(loggedEmp) ||
+          String(i.assigned_by) === String(loggedEmp)
       );
     }
 
-    // ⭐ Sort newest first (by start_date or createdAt)
+    // ⭐ Sort newest first
     issueArray.sort((a, b) => {
       const db = new Date(b.start_date || b.createdAt || 0);
       const da = new Date(a.start_date || a.createdAt || 0);
@@ -96,7 +97,7 @@ export default function IssueList() {
         ))}
       </div>
 
-      {/* SEARCH + CREATE */}
+      {/* SEARCH + CREATE + Employee Issues (manager) */}
       <div className="lux-search-row">
         <input
           type="text"
@@ -106,7 +107,22 @@ export default function IssueList() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
+        {/* Manager only button to go to Employee Issues page */}
+        {authUser?.role === "manager" && (
+          <button
+            className="lux-primary-btn"
+            onClick={() => navigate("/employee-issues")}
+          >
+            Employee Issues
+          </button>
+        )}
+
         {!isEmployee && (
+          <button className="lux-primary-btn" onClick={() => setOpenCreate(true)}>
+            + Create Issue
+          </button>
+        )}
+        {isEmployee && (
           <button className="lux-primary-btn" onClick={() => setOpenCreate(true)}>
             + Create Issue
           </button>
@@ -126,6 +142,8 @@ export default function IssueList() {
               <th style={{ minWidth: 220 }}>Title</th>
               <th>Priority</th>
               <th>Status</th>
+              <th>Assigned By</th>
+              <th>Assigned To</th>
               <th>Created Date</th>
               <th>Due Date</th>
               <th style={{ width: 72, textAlign: "center" }}>View</th>
@@ -135,7 +153,7 @@ export default function IssueList() {
 
           <tbody>
             {filtered.map((issue, index) => (
-              <tr key={issue.key}>
+              <tr key={issue.id || index}>
                 <td className="col-app">{issue.applicationname || "-"}</td>
                 <td className="col-title">{issue.title || "-"}</td>
 
@@ -151,7 +169,10 @@ export default function IssueList() {
                   </span>
                 </td>
 
-                <td>{issue.start_date || "-"}</td>
+                <td>{issue.assigner_name || issue.assigned_by || "-"}</td>
+                <td>{issue.assignee_name || issue.assigned_to || "-"}</td>
+
+                <td>{issue.start_date || issue.createdAt ? (issue.createdAt ? new Date(issue.createdAt).toLocaleDateString() : (issue.start_date || "-")) : "-"}</td>
                 <td>{issue.due_date || "-"}</td>
 
                 {/* VIEW ICON */}
@@ -163,28 +184,33 @@ export default function IssueList() {
                       setSelectedData(issue);
                       setOpenView(true);
                     }}
-                    style={{ background: "none", boxShadow: "none" }}
                   >
-<Eye size={18} strokeWidth={1.8} />
+                    <HiOutlineEye />
                   </button>
                 </td>
 
-                {/* UPDATE ICON */}
+                {/* UPDATE ICON - show only if manager OR involved */}
                 <td style={{ textAlign: "center" }}>
-                  <button
-                    className="icon-btn update-btn"
-                    title={isEmployee ? "Update status" : "Edit issue"}
-                    onClick={() => {
-                      setSelectedIndex(index);
-                      setSelectedData(issue); // ⭐ pass issue with key
-                      setOpenUpdate(true);
-                    }}
-                    style={{ background: "none", boxShadow: "none" }}
-                  >
-<Pencil size={18} strokeWidth={1.8} />
-                  </button>
+                  {(
+                    authUser?.role === "manager" ||
+                    String(issue.assigned_by) === String(loggedEmp) ||
+                    String(issue.assigned_to) === String(loggedEmp)
+                  ) ? (
+                    <button
+                      className="icon-btn update-btn"
+                      title={isEmployee ? "Update status" : "Edit issue"}
+                      onClick={() => {
+                        setSelectedIndex(index);
+                        setSelectedData(issue);
+                        setOpenUpdate(true);
+                      }}
+                    >
+                      <HiOutlinePencilAlt />
+                    </button>
+                  ) : (
+                    <div style={{ color: "#aaa", fontSize: 12 }}>—</div>
+                  )}
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -192,7 +218,7 @@ export default function IssueList() {
       </div>
 
       {/* CREATE */}
-      {openCreate && !isEmployee && (
+      {openCreate && (
         <IssueCreate
           onClose={() => {
             setOpenCreate(false);
@@ -202,9 +228,9 @@ export default function IssueList() {
       )}
 
       {/* UPDATE */}
-      {openUpdate && (
+      {openUpdate && selectedData && (
         <IssueUpdate
-          index={selectedIndex}  // kept for UI — not used for API anymore
+          index={selectedIndex}
           issue={selectedData}
           isEmployee={isEmployee}
           onClose={() => {
@@ -215,7 +241,7 @@ export default function IssueList() {
       )}
 
       {/* VIEW */}
-      {openView && (
+      {openView && selectedData && (
         <IssueView
           data={selectedData}
           onClose={() => setOpenView(false)}

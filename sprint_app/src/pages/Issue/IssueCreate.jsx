@@ -10,6 +10,7 @@ import "./IssueCreate.css";
 export default function IssueCreate({ onClose }) {
 
   const [applications, setApplications] = useState([]);
+  const [requirements, setRequirements] = useState([]); // kept from earlier change (no wiring)
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
@@ -173,8 +174,12 @@ export default function IssueCreate({ onClose }) {
               onChange={handleChange}
               className="issue-input"
             >
-              
-            
+              <option value="">Select Requirement</option>
+              {requirements.map((req, index) => (
+                <option key={index} value={req}>
+                  {req}
+                </option>
+              ))}
             </select>
           </div>
 
