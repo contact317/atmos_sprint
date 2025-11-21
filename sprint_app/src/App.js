@@ -146,17 +146,7 @@ export default function App() {
           }
         />
 
-        {/* Requirements */}
-        <Route
-          path="/requirements"
-          element={
-            <ProtectedRoute>
-              <MainLayout title="Requirements">
-                <Requirements />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+       
           {/* Employee Issues - Manager only */}
         <Route
           path="/employee-issues"

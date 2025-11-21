@@ -22,11 +22,7 @@ export default function Sidebar({ collapsed }) {
             <span className="label">Dashboard</span>
           </NavLink>
 
-          {/* REQUIREMENTS — added under Dashboard */}
-          <NavLink to="/requirements" className="menu-item">
-            <FileText size={20} strokeWidth={1.8} />
-            <span className="label">Requirements</span>
-          </NavLink>
+         
 
           {/* SPRINTS — visible to ALL */}
           <NavLink to="/sprints" className="menu-item">

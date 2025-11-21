@@ -7,7 +7,6 @@ import "./SprintCreate.css";
 
 export default function SprintCreate({ onClose }) {
   const [apps, setApps] = useState([]);
-  const [requirements, setRequirements] = useState([]); // ⭐ NEW FIELD
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
@@ -123,12 +122,8 @@ export default function SprintCreate({ onClose }) {
           onChange={handleChange}
           className="sprint-select"
         >
-          <option value="">Select Requirement</option>
-          {requirements.map((req, index) => (
-            <option key={index} value={req}>
-              {req}
-            </option>
-          ))}
+         
+          
         </select>
 
         {/* TITLE */}
