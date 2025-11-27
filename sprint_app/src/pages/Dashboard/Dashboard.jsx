@@ -72,18 +72,41 @@ if (isEmployee) {
   -----------------------------------*/
 
   // ⭐ CARDS (employee card hidden automatically)
-  const cards = [
-    <StatCard label="Total Sprints" value={sprints.length} />,
-    <StatCard label="Total Issues" value={issues.length} />,
+const cards = [
+  {
+    label: "Total Sprints",
+    value: sprints.length,
+    link: "/sprints"
+  },
+  {
+    label: "Total Issues",
+    value: issues.length,
+    link: "/issues"
+  },
+  !isEmployee && {
+    label: "Employees",
+    value: employees.length,
+    link: "/employees"
+  },
+  {
+    label: "Pending Issues",
+    value: issues.filter((i) => i.status === "Pending").length,
+    link: "/issues"
+  }
+]
+.filter(Boolean)
+.map((c, index) => (
+  <div
+    key={index}
+    className="lux-card dash-card dash-card-clickable"
+    onClick={() => (window.location.href = c.link)}
+  >
+    <h3>{c.label}</h3>
+    <p className="dash-number">{c.value}</p>
+  </div>
+));
 
-    // ⭐ Only managers see employee count
-    !isEmployee && <StatCard label="Employees" value={employees.length} />,
-    
-    <StatCard
-      label="Pending Issues"
-      value={issues.filter((i) => i.status === "Pending").length}
-    />
-  ].filter(Boolean); // remove null for employees
+ // remove null for employees
 
   // SEARCH
   const searchPlaceholder = "Search sprints...";

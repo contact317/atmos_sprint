@@ -1,51 +1,47 @@
-/* Drawer styles used for create & update
-   - ensures backdrop covers everything (sidebar + topbar)
-   - drawer sits on top and remains bright while background dims
-*/
-
-/* FULLSCREEN backdrop covering entire viewport with high z */
-.global-drawer-backdrop {
+/* Drawer backdrop (no blur) */
+.drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.55); /* darker dim so everything except drawer is visibly muted */
-  z-index: 9998; /* high priority so it dims topbar & sidebar */
-  backdrop-filter: blur(1px);
+  background: rgba(0,0,0,0.36);
+  z-index: 998; /* behind drawer */
 }
 
-/* drawer panel */
+/* Right drawer panel */
 .employee-drawer {
   position: fixed;
   top: 0;
-  right: -430px;
-  width: 400px;
+  right: -440px;
+  width: 530px;
+  max-width: 95%;
   height: 100vh;
-  background: #fff;
-  z-index: 9999; /* on top of backdrop */
+  background: #ffffff;
+  z-index: 9999; /* topmost */
   padding: 26px;
   overflow-y: auto;
-  box-shadow: -6px 0 30px rgba(2,6,23,0.22);
+  box-shadow: -12px 0 40px rgba(0,0,0,0.18);
   border-left: 6px solid #4f755a;
-  transition: right 0.28s cubic-bezier(.2,.9,.3,1), opacity 0.28s;
+  transition: right 0.32s cubic-bezier(.25,1,.5,1);
 }
 
 .employee-drawer.open {
   right: 0;
 }
 
+/* header */
 .drawer-title {
   font-size: 20px;
   font-weight: 700;
-  margin: 0 0 10px 0;
   color: #0f172a;
+  margin-bottom: 10px;
 }
 
 .drawer-close {
   position: absolute;
-  right: 14px;
+  right: 16px;
   top: 12px;
-  font-size: 26px;
-  background: none;
+  background: transparent;
   border: none;
+  font-size: 26px;
   cursor: pointer;
   color: #6b7280;
 }
@@ -53,22 +49,23 @@
 /* form */
 .drawer-form {
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 .drawer-label {
-  display: block;
+  font-size: 13px;
+  color: #4b5563;
   margin-top: 12px;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #264b33;
 }
 
 .drawer-input,
 .drawer-form select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #e6ece4;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e9e8;
   background: #fbfdfb;
   outline: none;
   font-size: 14px;
@@ -76,59 +73,43 @@
 
 .drawer-input:focus,
 .drawer-form select:focus {
-  border-color: #4f755a;
   box-shadow: 0 0 0 4px rgba(79,117,90,0.06);
+  border-color: #4f755a;
 }
 
-/* buttons */
+/* actions */
 .drawer-save {
-  background: #2f5a3f;
-  color: #fff;
+  margin-top: 14px;
+  padding: 12px;
+  background: #4f755a;
+  color: white;
   border: none;
-  padding: 12px 16px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 700;
+  width: 100%;
+}
+
+.drawer-save:hover {
+  transform: translateY(-2px);
 }
 
 .drawer-cancel {
-  background: #f3f4f6;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 10px;
+  margin-top: 8px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #e6e9e8;
+  border-radius: 8px;
   cursor: pointer;
-  color: #374151;
+  width: 100%;
 }
 
 .drawer-delete {
+  margin-top: 8px;
+  padding: 12px;
   background: #ef4444;
   color: #fff;
   border: none;
-  padding: 12px 14px;
   border-radius: 10px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* small spacing tweaks */
-.drawer-save:disabled,
-.drawer-delete:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ensure the drawer is readable and not blurred by backdrop */
-.employee-drawer,
-.employee-drawer * {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .employee-drawer {
-    width: 100%;
-  }
 }

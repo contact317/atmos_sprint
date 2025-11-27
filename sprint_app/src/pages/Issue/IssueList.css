@@ -223,3 +223,22 @@
   .lux-primary-btn { padding: 12px 16px; }
   .icon-btn { width: 34px; height: 34px; }
 }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: #f3f4f6;
+  color: #4f755a;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.icon-btn:hover {
+  background: #e2e8f0;
+  transform: scale(1.08);
+}

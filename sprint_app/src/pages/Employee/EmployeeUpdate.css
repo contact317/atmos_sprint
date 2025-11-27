@@ -1,39 +1,115 @@
-/* EmployeeUpdate.css - page form styling for EmployeeUpdate.jsx */
-
-.update-root {
-  padding: 20px;
+/* Drawer backdrop (no blur) */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.36);
+  z-index: 998; /* behind drawer */
 }
 
-.update-panel {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 12px 40px rgba(2,6,23,0.05);
-  max-width: 700px;
+/* Right drawer panel */
+.employee-drawer {
+  position: fixed;
+  top: 0;
+  right: -440px;
+  width: 530px;
+  max-width: 95%;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 9999; /* topmost */
+  padding: 26px;
+  overflow-y: auto;
+  box-shadow: -12px 0 40px rgba(0,0,0,0.18);
+  border-left: 6px solid #4f755a;
+  transition: right 0.32s cubic-bezier(.25,1,.5,1);
 }
-.update-panel .form-row {
+
+.employee-drawer.open {
+  right: 0;
+}
+
+/* header */
+.drawer-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.drawer-close {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* form */
+.drawer-form {
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
 }
-.update-panel label {
+
+.drawer-label {
   font-size: 13px;
   color: #4b5563;
+  margin-top: 12px;
+  margin-bottom: 6px;
   font-weight: 600;
 }
-.update-panel input {
-  padding: 10px 12px;
-  border-radius: 8px;
+
+.drawer-input,
+.drawer-form select {
+  padding: 12px;
+  border-radius: 10px;
   border: 1px solid #e6e9e8;
+  background: #fbfdfb;
   outline: none;
+  font-size: 14px;
 }
-.update-save {
+
+.drawer-input:focus,
+.drawer-form select:focus {
+  box-shadow: 0 0 0 4px rgba(79,117,90,0.06);
+  border-color: #4f755a;
+}
+
+/* actions */
+.drawer-save {
+  margin-top: 14px;
   padding: 12px;
   background: #4f755a;
-  color: #fff;
-  border-radius: 8px;
+  color: white;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 700;
+  width: 100%;
+}
+
+.drawer-save:hover {
+  transform: translateY(-2px);
+}
+
+.drawer-cancel {
+  margin-top: 8px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #e6e9e8;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.drawer-delete {
+  margin-top: 8px;
+  padding: 12px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
 }

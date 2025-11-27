@@ -6,31 +6,14 @@ import "./EmployeeCreate.css";
 
 import { FiEdit2, FiTrash2, FiEye, FiEyeOff } from "react-icons/fi";
 
-/**
- * EmployeeList.jsx
- * - Add / Create drawer (right)
- * - Update drawer (right) — opened by pencil icon, matches SprintUpdate UI
- * - Delete employee (inside Update drawer) with confirm
- * - Department dropdown in create & update (fetched from getDepartmentList)
- * - Sorting: Name and Department (cycles none -> asc -> desc)
- * - New employees show first (list reversed by default)
- *
- * NOTES:
- * - I import deleteEmployee for the delete flow. If your api file doesn't export it yet,
- *   add the function there (or rename) — this UI calls deleteEmployee(keyOrIndex).
- * - I did not change your server/API semantics or logic.
- */
-
 export default function EmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // drawers
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
 
-  // create form
   const [createForm, setCreateForm] = useState({
     empid: "",
     name: "",
@@ -42,20 +25,16 @@ export default function EmployeeList() {
   });
   const [creating, setCreating] = useState(false);
 
-  // update form (holds key/index + data)
   const [updateKey, setUpdateKey] = useState(null);
   const [updateForm, setUpdateForm] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // departments
   const [departments, setDepartments] = useState([]);
 
-  // sorting state for name & dept: "none" | "asc" | "desc"
   const [nameSort, setNameSort] = useState("none");
   const [deptSort, setDeptSort] = useState("none");
 
-  // show/hide password in update drawer
   const [showUpdatePwd, setShowUpdatePwd] = useState(false);
 
   useEffect(() => {
@@ -63,18 +42,12 @@ export default function EmployeeList() {
     loadDepartments();
   }, []);
 
-  // old:
-  // const data = await getEmployeeList();
-  // if (data) setEmployees(Object.values(data));
-
-  // new (preserve key):
   const loadEmployees = async () => {
     setLoading(true);
     try {
-      const data = await getEmployeeList(); // data is an object keyed by firebase keys
+      const data = await getEmployeeList();
       if (data && typeof data === "object") {
         const arr = Object.entries(data).map(([key, val]) => {
-          // prefer original id-like fields but keep 'key' for API calls
           return { key, ...val };
         });
         setEmployees(arr);
@@ -93,8 +66,9 @@ export default function EmployeeList() {
     try {
       const d = await getDepartmentList();
       if (Array.isArray(d)) {
-        // ensure stable order A-Z
-        const uniqueOrdered = Array.from(new Set(d)).sort((a,b) => String(a).localeCompare(String(b)));
+        const uniqueOrdered = Array.from(new Set(d)).sort((a, b) =>
+          String(a).localeCompare(String(b))
+        );
         setDepartments(uniqueOrdered);
       } else {
         setDepartments([]);
@@ -105,12 +79,10 @@ export default function EmployeeList() {
     }
   };
 
-  // CREATE handlers
   const handleCreateChange = (e) =>
     setCreateForm({ ...createForm, [e.target.name]: e.target.value });
 
   const handleCreateSubmit = async () => {
-    // Updated validation: all fields required including role and password
     if (
       !createForm.empid ||
       !createForm.name ||
@@ -153,10 +125,8 @@ export default function EmployeeList() {
     }
   };
 
-  // UPDATE open
   const openUpdateDrawer = (indexOrKey, record) => {
     setUpdateKey(indexOrKey);
-    // ensure we copy password into updateForm (show stored password)
     setUpdateForm({ ...record });
     setShowUpdatePwd(false);
     setOpenUpdate(true);
@@ -170,7 +140,6 @@ export default function EmployeeList() {
     if (!updateForm) return;
     setUpdating(true);
     try {
-      // You said not to change API logic — we call updateEmployee with the same index/key semantics
       await updateEmployee(updateKey, updateForm);
       alert("Employee updated successfully");
       setOpenUpdate(false);
@@ -191,11 +160,9 @@ export default function EmployeeList() {
     if (!ok) return;
     setDeleting(true);
     try {
-      // keep semantics: call deleteEmployee(recordKey)
       if (typeof deleteEmployee === "function") {
         await deleteEmployee(updateKey);
       } else {
-        // If deleteEmployee not exported, attempt a fallback: try updateEmployee with null (do nothing)
         console.warn("deleteEmployee not available in api — implement api deleteEmployee(key).");
         throw new Error("deleteEmployee api missing");
       }
@@ -212,54 +179,48 @@ export default function EmployeeList() {
     }
   };
 
-  // FILTER + SORT logic
   const filtered = employees.filter((emp) =>
-    (((emp.name || "") + " " + (emp.empid || "") + " " + (emp.role || "") + " " + (emp.department || ""))
+    (((emp.name || "") +
+      " " +
+      (emp.empid || "") +
+      " " +
+      (emp.role || "") +
+      " " +
+      (emp.department || ""))
       .toString()
       .toLowerCase()
       .includes(search.toLowerCase()))
   );
 
-  // Apply sorting: default display should show latest first (new added on top)
   const sorted = (() => {
     let arr = filtered.slice();
-    // default: show new items first -> reverse original insertion order (user asked earlier)
-    // But we must also respect sorting controls (nameSort / deptSort)
-    // If both are 'none' -> reverse to show latest first
     if (nameSort === "none" && deptSort === "none") {
       arr = arr.slice().reverse();
       return arr;
     }
-
-    // If nameSort set -> sort by name (localeCompare)
     if (nameSort !== "none") {
-      arr.sort((a,b) => {
-        const na = (a.name || "").toString().toLowerCase();
-        const nb = (b.name || "").toString().toLowerCase();
+      arr.sort((a, b) => {
+        const na = (a.name || "").toLowerCase();
+        const nb = (b.name || "").toLowerCase();
         if (nameSort === "asc") return na.localeCompare(nb);
         return nb.localeCompare(na);
       });
       return arr;
     }
-
-    // If deptSort set -> sort by department
     if (deptSort !== "none") {
-      arr.sort((a,b) => {
-        const da = (a.department || "").toString().toLowerCase();
-        const db = (b.department || "").toString().toLowerCase();
+      arr.sort((a, b) => {
+        const da = (a.department || "").toLowerCase();
+        const db = (b.department || "").toLowerCase();
         if (deptSort === "asc") return da.localeCompare(db);
         return db.localeCompare(da);
       });
       return arr;
     }
-
     return arr;
   })();
 
-  // column header click cycles: none -> asc -> desc -> none
   const cycleSort = (field) => {
     if (field === "name") {
-      // reset dept
       setDeptSort("none");
       setNameSort((s) => {
         if (s === "none") return "asc";
@@ -276,14 +237,12 @@ export default function EmployeeList() {
     }
   };
 
-  // determine icon glyph for sort indicator
   const sortIcon = (state) => {
     if (state === "none") return "";
     if (state === "asc") return "▲";
     return "▼";
   };
 
-  // minimal manager check (sidebar/route already restricts pages; this just hides Add button for employees)
   const authUser = (() => {
     try {
       return JSON.parse(localStorage.getItem("authUser")) || {};
@@ -353,7 +312,7 @@ export default function EmployeeList() {
                     <td>{emp.name || "-"}</td>
                     <td>{emp.empid || emp.employee_id || "-"}</td>
                     <td>{emp.department || "-"}</td>
-<td>{(emp.role || "-").toUpperCase()}</td>
+                    <td>{(emp.role || "-").toUpperCase()}</td>
                     <td>{emp.email || "-"}</td>
                     <td>{emp.phone || "-"}</td>
                     <td>{emp.password || "-"}</td>
@@ -361,7 +320,6 @@ export default function EmployeeList() {
                       <button
                         className="icon-action edit-icon"
                         title="Edit employee"
-                        // new - use key stored on each record
                         onClick={() => openUpdateDrawer(emp.key, emp)}
                       >
                         <FiEdit2 />
@@ -375,10 +333,10 @@ export default function EmployeeList() {
         )}
       </div>
 
-      {/* ================= CREATE DRAWER ================= */}
+      {/* -------------------- CREATE DRAWER -------------------- */}
       {openCreate && (
         <>
-          <div className="global-drawer-backdrop" onClick={() => setOpenCreate(false)}></div>
+          <div className="global-drawer-backdrop"></div>
 
           <div className="employee-drawer open">
             <h3 className="drawer-title">Add Employee</h3>
@@ -424,10 +382,10 @@ export default function EmployeeList() {
         </>
       )}
 
-      {/* ================= UPDATE DRAWER ================= */}
+      {/* -------------------- UPDATE DRAWER -------------------- */}
       {openUpdate && updateForm && (
         <>
-          <div className="global-drawer-backdrop" onClick={() => setOpenUpdate(false)}></div>
+          <div className="global-drawer-backdrop"></div>
 
           <div className="employee-drawer open">
             <h3 className="drawer-title">Update Employee</h3>

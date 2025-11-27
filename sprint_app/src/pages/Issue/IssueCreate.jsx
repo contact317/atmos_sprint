@@ -4,13 +4,14 @@ import { addIssue } from "../../api/issueApi";
 import { getApplicationList } from "../../api/applicationApi";
 import { getDepartmentList } from "../../api/departmentApi";
 import { getEmployeeList } from "../../api/employeeApi";
+import { getRequirementList } from "../../api/requirementApi"; // ⭐ ADDED
 
 import "./IssueCreate.css";
 
 export default function IssueCreate({ onClose }) {
 
   const [applications, setApplications] = useState([]);
-  const [requirements, setRequirements] = useState([]); // kept from earlier change (no wiring)
+  const [requirements, setRequirements] = useState([]); // ⭐ REQUIREMENTS NOW REAL
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
 
@@ -37,11 +38,13 @@ export default function IssueCreate({ onClose }) {
     due_date: "",
   });
 
-  // Load applications + departments on mount
+  // Load applications + departments + requirements
   useEffect(() => {
     loadApplications();
     loadDepartments();
-    // If an employee, prefill department and keep disabled (we'll set in effect below)
+    loadRequirements(); // ⭐ ADDED
+
+    // If employee – auto-fill department
     if (isEmployee && authUser.department) {
       setForm((f) => ({ ...f, department: authUser.department }));
     }
@@ -58,7 +61,21 @@ export default function IssueCreate({ onClose }) {
     if (Array.isArray(data)) setDepartments(data);
   };
 
-  // Load employees when department changes (or when prefilled for employee)
+  const loadRequirements = async () => {
+    const data = await getRequirementList(); // RAW OBJECT
+    if (data) {
+      const formatted = Object.entries(data).map(([id, r]) => ({
+        id,
+        title: r.title || "",
+        department: r.department || "",
+        applicationName: r.applicationName || "",
+        priority: r.priority || "",
+      }));
+      setRequirements(formatted); // STORE PROPER LIST
+    }
+  };
+
+  // Load employees when department changes
   useEffect(() => {
     if (form.department) {
       loadEmployees();
@@ -84,19 +101,15 @@ export default function IssueCreate({ onClose }) {
     setEmployees(filtered);
   };
 
-  // Update any field
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // If user is employee and trying to change department (shouldn't happen since it's disabled),
-    // ignore department changes.
-    if (isEmployee && name === "department") {
-      return;
-    }
+
+    if (isEmployee && name === "department") return;
+
     setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async () => {
-    // required fields unchanged
     if (
       !form.applicationname ||
       !form.title ||
@@ -111,19 +124,20 @@ export default function IssueCreate({ onClose }) {
       return;
     }
 
-    // Build payload and add assignment metadata
     const payload = {
       ...form,
       createdAt: new Date().toISOString(),
-      // who assigned/created this issue
+
       assigned_by: isEmployee ? authUser.empid : (authUser.empid || "manager"),
-      assigner_name: isEmployee ? (authUser.name || authUser.empid) : (authUser.name || "Manager"),
-      // we also include assignee_name for easier display
+      assigner_name: isEmployee
+        ? (authUser.name || authUser.empid)
+        : (authUser.name || "Manager"),
+
       assignee_name: (() => {
         const emp = employees.find(e => String(e.empid) === String(form.assigned_to));
         if (emp) return emp.name || emp.empid;
         return "";
-      })()
+      })(),
     };
 
     await addIssue(payload);
@@ -136,7 +150,7 @@ export default function IssueCreate({ onClose }) {
       {/* BACKDROP */}
       <div className="drawer-backdrop"></div>
 
-      {/* FLOATING CLOSE BUTTON */}
+      {/* CLOSE BUTTON */}
       <button className="drawer-close-floating" onClick={onClose}>
         ×
       </button>
@@ -165,7 +179,7 @@ export default function IssueCreate({ onClose }) {
             </select>
           </div>
 
-          {/* REQUIREMENT DROPDOWN (optional) */}
+          {/* REQUIREMENT DROPDOWN */}
           <div>
             <label className="issue-label">Select Requirement (Optional)</label>
             <select
@@ -175,9 +189,10 @@ export default function IssueCreate({ onClose }) {
               className="issue-input"
             >
               <option value="">Select Requirement</option>
-              {requirements.map((req, index) => (
-                <option key={index} value={req}>
-                  {req}
+
+              {requirements.map((req) => (
+                <option key={req.id} value={req.title}>
+                  {req.title}
                 </option>
               ))}
             </select>
@@ -217,7 +232,7 @@ export default function IssueCreate({ onClose }) {
               value={form.department}
               onChange={handleChange}
               className="issue-input"
-              disabled={isEmployee} // ❗ Employee: auto-selected and disabled
+              disabled={isEmployee}
             >
               <option value="">Select Department</option>
               {departments.map((dept, index) => (
@@ -226,10 +241,14 @@ export default function IssueCreate({ onClose }) {
                 </option>
               ))}
             </select>
-            {isEmployee && <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>Department auto-set to your department.</div>}
+            {isEmployee && (
+              <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
+                Department auto-set to your department.
+              </div>
+            )}
           </div>
 
-          {/* ASSIGNED TO */}
+          {/* ASSIGN TO */}
           <div>
             <label className="issue-label">Assign To</label>
             <select
@@ -308,7 +327,7 @@ export default function IssueCreate({ onClose }) {
             </select>
           </div>
 
-          {/* SUBMIT */}
+          {/* SAVE */}
           <button className="issue-save-btn" onClick={handleSubmit}>
             Create Issue
           </button>

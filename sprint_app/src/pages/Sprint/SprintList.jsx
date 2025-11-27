@@ -80,11 +80,13 @@ export default function SprintList() {
   };
 
   return (
+  <>
+    {/* MAIN PAGE LAYOUT */}
     <div className="page-content-inner">
 
       {/* CARDS */}
       <div className="lux-cards">
-        {[
+        {[ 
           { title: "Total Sprints", value: total },
           { title: "In Progress", value: inProgress },
           { title: "Completed", value: completed },
@@ -165,7 +167,7 @@ export default function SprintList() {
                     }}
                     style={{ background: "none", boxShadow: "none" }}
                   >
-<Eye size={18} strokeWidth={1.8} />
+                    <Eye size={18} strokeWidth={1.8} />
                   </button>
                 </td>
 
@@ -179,7 +181,7 @@ export default function SprintList() {
                     }}
                     style={{ background: "none", boxShadow: "none" }}
                   >
-<Pencil size={18} strokeWidth={1.8} />
+                    <Pencil size={18} strokeWidth={1.8} />
                   </button>
                 </td>
 
@@ -188,34 +190,35 @@ export default function SprintList() {
           </tbody>
         </table>
       </div>
-
-      {/* MODALS */}
-      {openCreate && !isEmployee && (
-        <SprintCreate
-          onClose={() => {
-            setOpenCreate(false);
-            loadSprints();
-          }}
-        />
-      )}
-
-      {openView && (
-        <SprintView
-          data={selectedSprint}
-          onClose={() => setOpenView(false)}
-        />
-      )}
-
-      {openUpdate && (
-        <SprintUpdate
-          sprint={selectedSprint}
-          isEmployee={isEmployee}
-          onClose={() => {
-            setOpenUpdate(false);
-            loadSprints();
-          }}
-        />
-      )}
     </div>
-  );
+
+    {/* FIX: DRAWERS MUST BE OUTSIDE PAGE LAYOUT */}
+    {openCreate && !isEmployee && (
+      <SprintCreate
+        onClose={() => {
+          setOpenCreate(false);
+          loadSprints();
+        }}
+      />
+    )}
+
+    {openView && (
+      <SprintView
+        data={selectedSprint}
+        onClose={() => setOpenView(false)}
+      />
+    )}
+
+    {openUpdate && (
+      <SprintUpdate
+        sprint={selectedSprint}
+        isEmployee={isEmployee}
+        onClose={() => {
+          setOpenUpdate(false);
+          loadSprints();
+        }}
+      />
+    )}
+  </>
+);
 }

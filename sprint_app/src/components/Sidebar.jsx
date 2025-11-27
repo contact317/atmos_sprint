@@ -21,7 +21,11 @@ export default function Sidebar({ collapsed }) {
             <Home size={20} strokeWidth={1.8} />
             <span className="label">Dashboard</span>
           </NavLink>
-
+          {/* ⭐ REQUIREMENTS — visible to ALL (NEW) */}
+          <NavLink to="/requirements" className="menu-item">
+            <FileText size={20} strokeWidth={1.8} />
+            <span className="label">Requirements</span>
+          </NavLink>
          
 
           {/* SPRINTS — visible to ALL */}
@@ -40,13 +44,7 @@ export default function Sidebar({ collapsed }) {
             </span>
           </NavLink>
 
-          {/* SETTINGS — manager only (optional) */}
-          {!isEmployee && (
-            <NavLink to="/settings" className="menu-item">
-              <Settings size={20} strokeWidth={1.8} />
-              <span className="label">Settings</span>
-            </NavLink>
-          )}
+
 
         </nav>
       </div>

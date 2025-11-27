@@ -76,6 +76,27 @@ export default function TopBar({ title, onToggleSidebar }) {
     window.open("/", "_blank");
   };
 
+  // new app openers
+  const openPazy = () => {
+    window.open("https://app.pazy.io/login?n=L3BheW1lbnRzL292ZXJ2aWV3", "_blank");
+  };
+
+  const openMcube = () => {
+    window.open("https://mcube.vmctechnologies.com/site/login", "_blank");
+  };
+
+  const openSalesforce = () => {
+    window.open("https://www.salesforce.com/in/?ir=1", "_blank");
+  };
+
+  const openPropflo = () => {
+    window.open("https://atmos.propflo.ai/", "_blank");
+  };
+
+  const openStar = () => {
+    window.open("https://office.atmoslifestyle.in/prod/atmosstar/", "_blank");
+  };
+
   const handlePwdChange = async () => {
     setStatusMsg("");
     if (!empId) {
@@ -302,7 +323,7 @@ export default function TopBar({ title, onToggleSidebar }) {
                   border: "1px solid #f0f0f0",
                   cursor: "pointer"
                 }}>
-                  <Users size={20} strokeWidth={1.6} />
+                  <Users size={20} strokeWidth={1.6} stroke="#4f755a" />
                   <div style={{ marginTop: 6, fontSize: 12 }}>Teams</div>
                 </button>
 
@@ -316,7 +337,7 @@ export default function TopBar({ title, onToggleSidebar }) {
                   border: "1px solid #f0f0f0",
                   cursor: "pointer"
                 }}>
-                  <Mail size={20} strokeWidth={1.6} />
+                  <Mail size={20} strokeWidth={1.6} stroke="#4f755a" />
                   <div style={{ marginTop: 6, fontSize: 12 }}>Outlook</div>
                 </button>
 
@@ -330,7 +351,7 @@ export default function TopBar({ title, onToggleSidebar }) {
                   border: "1px solid #f0f0f0",
                   cursor: "pointer"
                 }}>
-                  <Globe size={20} strokeWidth={1.6} />
+                  <Globe size={20} strokeWidth={1.6} stroke="#4f755a" />
                   <div style={{ marginTop: 6, fontSize: 12 }}>Portal</div>
                 </button>
 
@@ -344,11 +365,83 @@ export default function TopBar({ title, onToggleSidebar }) {
                   border: "1px solid #f0f0f0",
                   cursor: "pointer"
                 }}>
-                  <User size={20} strokeWidth={1.6} />
+                  <User size={20} strokeWidth={1.6} stroke="#4f755a" />
                   <div style={{ marginTop: 6, fontSize: 12 }}>Employees</div>
                 </button>
 
+                {/* New requested apps */}
+                <button className="app-tile" onClick={openPazy} title="Pazy" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Users size={20} strokeWidth={1.6} stroke="#4f755a" />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Pazy</div>
+                </button>
+
+                <button className="app-tile" onClick={openMcube} title="Mcube" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Globe size={20} strokeWidth={1.6} stroke="#4f755a" />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Mcube</div>
+                </button>
+
+                <button className="app-tile" onClick={openSalesforce} title="SalesForce" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Mail size={20} strokeWidth={1.6} stroke="#4f755a" />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>SalesForce</div>
+                </button>
+
+                <button className="app-tile" onClick={openPropflo} title="Propflo" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Globe size={20} strokeWidth={1.6} stroke="#4f755a" />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Propflo</div>
+                </button>
+
+                <button className="app-tile" onClick={openStar} title="Star" style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: 10,
+                  borderRadius: 10,
+                  background: "#fafafa",
+                  border: "1px solid #f0f0f0",
+                  cursor: "pointer"
+                }}>
+                  <Users size={20} strokeWidth={1.6} stroke="#4f755a" />
+                  <div style={{ marginTop: 6, fontSize: 12 }}>Star</div>
+                </button>
+
                 <div style={{ gridColumn: "span 3", marginTop: 6, fontSize: 12, color: "#666" }}>
+                  {/* reserved footer row if needed */}
                 </div>
               </div>
             </div>

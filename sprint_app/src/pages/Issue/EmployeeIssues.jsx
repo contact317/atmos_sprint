@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getIssueList } from "../../api/issueApi";
 import "./IssueList.css";
 
-import { HiOutlineEye, HiOutlinePencilAlt } from "react-icons/hi";
+import { Eye, Pencil } from "lucide-react";
 
 import IssueView from "./IssueView";
 import IssueUpdate from "./IssueUpdate";
@@ -149,7 +149,7 @@ export default function EmployeeIssues() {
                         setOpenView(true);
                       }}
                     >
-                      <HiOutlineEye />
+                     <Eye size={18} />
                     </button>
                   </td>
 
@@ -162,7 +162,7 @@ export default function EmployeeIssues() {
                         setOpenUpdate(true);
                       }}
                     >
-                      <HiOutlinePencilAlt />
+                      <Pencil size={18} />
                     </button>
                   </td>
                 </tr>

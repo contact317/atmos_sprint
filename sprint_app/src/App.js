@@ -1,3 +1,4 @@
+// src/App.js
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -10,10 +11,14 @@ import IssueCreate from "./pages/Issue/IssueCreate";
 import IssueUpdate from "./pages/Issue/IssueUpdate";
 import EmployeeIssues from "./pages/Issue/EmployeeIssues";
 
+
 import SprintList from "./pages/Sprint/SprintList";
 import SprintCreate from "./pages/Sprint/SprintCreate";
 import SprintUpdate from "./pages/Sprint/SprintUpdate";
 
+// Requirements module (correct folder)
+import Requirements from "./pages/Requirements/Requirements";
+import RequirementView from "./pages/Requirements/RequirementView";
 
 import Signin from "./pages/Login/Signin";
 import Signup from "./pages/Login/Signup";
@@ -85,6 +90,18 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+{/* Employee Issues */}
+<Route
+  path="/employee-issues"
+  element={
+    <ProtectedRoute>
+      <MainLayout title="Employee Issues">
+        <EmployeeIssues />
+      </MainLayout>
+    </ProtectedRoute>
+  }
+/>
+
 
         {/* Issue Create – Manager Only */}
         <Route
@@ -146,18 +163,27 @@ export default function App() {
           }
         />
 
-       
-          {/* Employee Issues - Manager only */}
-        <Route
-          path="/employee-issues"
-          element={
-            <ManagerRoute>
-              <MainLayout title="Employee Issues">
-                <EmployeeIssues />
-              </MainLayout>
-            </ManagerRoute>
-          }
-        />
+{/* Requirements – Manager Only */}
+<Route
+  path="/requirements"
+  element={
+    <ManagerRoute>
+      <MainLayout title="Requirements">
+        <Requirements />
+      </MainLayout>
+    </ManagerRoute>
+  }
+/>
+<Route
+  path="/requirements/view/:id"
+  element={
+    <MainLayout title="View Requirement">
+      <RequirementView />
+    </MainLayout>
+  }
+/>
+
+
       </Routes>
     </BrowserRouter>
   );
